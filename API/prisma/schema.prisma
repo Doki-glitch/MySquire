@@ -1,0 +1,193 @@
+// This is your Prisma schema file,
+// learn more about it in the docs  https //pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate  https //pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgres"
+  url      = env("DATABASE_URL")
+}
+
+model Personagem {
+  id              Int         @id @default(autoincrement())
+  nome            String      @db.VarChar(50)
+  idade           Int         @db.SmallInt
+  descricao       String?     @db.Text
+  características String?     @db.Text
+  nivel           Int         @db.SmallInt
+  experiencia     Int         @db.SmallInt
+  status          Status[]
+  atributos       Atributo[]
+  periciais       Pericia[]
+  profissoes      Profissao[]
+  especiais       Especiais[]
+  equipamentos    Equipamento[]
+  @@map("personagens")
+}
+
+model Status {
+  id              Int         @id @default(autoincrement())
+  vida            Int         @db.SmallInt
+  sanidade        Int         @db.SmallInt
+  mana            Int         @db.SmallInt
+  afinco          Int         @db.SmallInt
+  armadura        Int         @db.SmallInt
+  estoicismo      Int         @db.SmallInt
+  condicoes       String      @db.VarChar(30)
+  personagem      Personagem  @relation(fields: [personagemId], references: [id])
+  personagemId    Int         @unique
+  @@map("status")
+}
+
+model Atributo {
+  id              Int         @id @default(autoincrement())
+  constituicao    Int         @db.SmallInt
+  curiosidade     Int         @db.SmallInt
+  destreza        Int         @db.SmallInt
+  forca           Int         @db.SmallInt
+  mistico         Int         @db.SmallInt
+  percepcao       Int         @db.SmallInt
+  presenca        Int         @db.SmallInt
+  razao           Int         @db.SmallInt
+  sorte           Int         @db.SmallInt
+  vontade         Int         @db.SmallInt
+  personagem      Personagem  @relation(fields: [personagemId], references: [id])
+  personagemId    Int         @unique
+  @@map("atributos")
+}
+
+model Pericia {
+  id              Int         @id @default(autoincrement())
+  adestramento    Int         @db.SmallInt
+  ranged          Int         @db.SmallInt
+  melee           Int         @db.SmallInt
+  desarmado       Int         @db.SmallInt
+  atuacao         Int         @db.SmallInt
+  furtividade     Int         @db.SmallInt
+  historia        Int         @db.SmallInt
+  iniciativa      Int         @db.SmallInt
+  leitura         Int         @db.SmallInt
+  medicina        Int         @db.SmallInt
+  mitologia       Int         @db.SmallInt
+  negociacao      Int         @db.SmallInt
+  persuasao       Int         @db.SmallInt
+  psicologia      Int         @db.SmallInt
+  teologia        Int         @db.SmallInt
+  personagem      Personagem  @relation(fields: [personagemId], references: [id])
+  personagemId    Int         @unique
+  @@map("pericias")
+}
+
+model Profissao {
+  id              Int         @id @default(autoincrement())
+  nome            String      @db.VarChar(30)
+  bonus           Bonus       @default(Constituição)
+  personagem      Personagem  @relation(fields: [personagemId], references: [id])
+  personagemId    Int
+  habilidades     Habilidade[]
+  @@map("profissoes")
+}
+
+model Habilidade {
+  id              Int         @id @default(autoincrement())
+  nome            String      @db.VarChar()
+  valor           Int         @db.SmallInt
+  profissao       Profissao   @relation(fields: [profissaoId], references: [id])
+  profissaoId     Int
+  @@map("habilidades")
+}
+
+model Especiais {
+  id              Int         @id @default(autoincrement())
+  nome            String      @db.VarChar()
+  descricao       String      @db.Text
+  personagem      Personagem  @relation(fields: [personagemId], references: [id])
+  personagemId    Int
+  @@map("especiais")
+}
+
+model Equipamento {
+  id              Int         @id @default(autoincrement())
+  nome            String      @db.VarChar(30)
+  danoMin         Int         @db.SmallInt
+  danoMax         Int         @db.SmallInt
+  habilidade      String      @db.Text
+  alcance         Alcance     @default(Pessoal)
+  caracteristica  Caracteristica[]
+  requerimento    Requerimento[]
+  penalidade      Penalidade[]
+  personagem      Personagem  @relation(fields: [personagemId], references: [id])
+  personagemId    Int
+  @@map("equipamentos")     
+}
+
+model Caracteristica {
+  id              Int         @id @default(autoincrement())
+  nome            String      @db.VarChar(30)
+  descricao       String      @db.Text
+  equipamento     Equipamento @relation(fields: [equipamentoId], references: [id])
+  equipamentoId   Int
+}
+
+model Requerimento {
+  id              Int         @id @default(autoincrement())
+  atributo        String      @db.VarChar()
+  valor           Int         @db.SmallInt
+  equipamento     Equipamento @relation(fields: [equipamentoId], references: [id])
+  equipamentoId   Int
+}
+
+model Penalidade {
+  id              Int         @id @default(autoincrement())
+  nome            String      @db.VarChar()
+  valor           Int         @db.SmallInt
+  equipamento     Equipamento @relation(fields: [equipamentoId], references: [id])
+  equipamentoId   Int
+}
+
+model Magia {
+  id              Int         @id @default(autoincrement())
+  nome            String      @db.VarChar(50)
+  
+}
+
+enum Bonus {
+Constituição  
+Curiosidade  
+Destreza  
+Força  
+Místico  
+Percepção  
+Presença  
+Razão  
+Sorte  
+Vontade  
+Adestramento 
+Armas_à_distância  @map("Armas à Distância")
+Armas_brancas      @map("Armas Brancas")
+Artes_marciais     @map("Artes Marciais")
+Atuação 
+Furtividade  
+História  
+Iniciativa  
+Leitura  
+Medicina 
+Mitologia  
+Negociação  
+Persuasão  
+Psicologia  
+Teologia  
+}
+
+enum Alcance {
+  Pessoal
+  Curto
+  Médio
+  Longo
+  Superior
+}
