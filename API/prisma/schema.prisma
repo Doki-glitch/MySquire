@@ -18,12 +18,12 @@ model Personagem {
   nome            String      @db.VarChar(50)
   idade           Int         @db.SmallInt
   descricao       String?     @db.Text
-  características String?     @db.Text
+  caracteristicas String?     @db.Text
   nivel           Int         @db.SmallInt
   experiencia     Int         @db.SmallInt
   status          Status[]
   atributos       Atributo[]
-  periciais       Pericia[]
+  pericias       Pericia[]
   profissoes      Profissao[]
   especiais       Especiais[]
   armamentos      Armamento[]
@@ -95,7 +95,7 @@ model Pericia {
 model Profissao {
   id              Int         @id @default(autoincrement())
   nome            String      @db.VarChar(30)
-  bonus           Bonus       @default(Constituição)
+  bonus           Bonus       @default(Constituicao)
   personagem      Personagem  @relation(fields: [personagemId], references: [id])
   personagemId    Int
   habilidades     Habilidade[]
@@ -103,36 +103,36 @@ model Profissao {
 }
 
 enum Bonus {
-Constituição  
+Constituicao       @map("Constituição")
 Curiosidade  
 Destreza  
-Força  
-Místico  
-Percepção  
-Presença  
-Razão  
+Forca              @map("Força")
+Mistico            @map("Místico")
+Percepcao          @map("Percepção")
+Presenca           @map("Presença")
+Razao              @map("Razão")
 Sorte  
 Vontade  
 Adestramento 
-Armas_à_distância  @map("Armas à Distância")
+Armas_a_distancia  @map("Armas à Distância")
 Armas_brancas      @map("Armas Brancas")
 Artes_marciais     @map("Artes Marciais")
-Atuação 
+Atuacao            @map("Atuação")
 Furtividade  
-História  
+Historia           @map("História")
 Iniciativa  
 Leitura  
 Medicina 
 Mitologia  
-Negociação  
-Persuasão  
+Negociacao         @map("Negociação")
+Persuasao          @map("Persuasão")
 Psicologia  
 Teologia  
 }
 
 model Habilidade {
   id              Int         @id @default(autoincrement())
-  nome            String      @db.VarChar()
+  nome            String      @db.VarChar(50)
   valor           Int         @db.SmallInt
   profissao       Profissao   @relation(fields: [profissaoId], references: [id])
   profissaoId     Int
@@ -141,7 +141,7 @@ model Habilidade {
 
 model Especiais {
   id              Int         @id @default(autoincrement())
-  nome            String      @db.VarChar()
+  nome            String      @db.VarChar(50)
   descricao       String      @db.Text
   personagem      Personagem  @relation(fields: [personagemId], references: [id])
   personagemId    Int
@@ -156,7 +156,7 @@ model Armamento {
   habilidade      String      @db.Text
   alcance         Alcance     @default(Pessoal)
   carregador      Int?        @db.SmallInt
-  recarga         Recarga?    @default(Instantâneo)
+  recarga         Recarga?    @default(Instantaneo)
   cadencia        Int?        @db.SmallInt
   caracteristica  Caracteristica[]
   requerimento    Requerimento[]
@@ -169,14 +169,14 @@ model Armamento {
 enum Alcance {
   Pessoal
   Curto
-  Médio
+  Medio  @map("Médio")
   Longo
   Superior
 }
 
 enum Recarga {
-  Instantâneo
-  Ação_extra  @map("Ação Extra")
+  Instantaneo @map("Instantâneo")
+  Acao_extra  @map("Ação Extra")
 }
 
 model Caracteristica {
@@ -189,7 +189,7 @@ model Caracteristica {
 
 model Requerimento {
   id              Int         @id @default(autoincrement())
-  atributo        String      @db.VarChar()
+  atributo        String      @db.VarChar(50)
   valor           Int         @db.SmallInt
   armamento       Armamento   @relation(fields: [armamentoId], references: [id])
   armamentoId     Int
@@ -197,7 +197,7 @@ model Requerimento {
 
 model Penalidade {
   id              Int         @id @default(autoincrement())
-  nome            String      @db.VarChar()
+  nome            String      @db.VarChar(50)
   valor           Int         @db.SmallInt
   armamento       Armamento   @relation(fields: [armamentoId], references: [id])
   armamentoId     Int
@@ -212,10 +212,10 @@ model Magia {
   cura            String?     @db.VarChar(10)
   duracao         Int?        @db.SmallInt
   efeito          Efeito[]
-  purifica        Purifica?   @default(Único)
+  purifica        Purifica?   @default(Unico)
   dano            String?     @db.VarChar(10)
   escudo          String?     @db.VarChar(10)
-  alvos           Alvo?       @default(Único)
+  alvos           Alvo?       @default(Unico)
   tipoAlvo        TipoAlvo?   @default(Aliado)
   invoHP          String?     @db.VarChar(10)  
   invoATK         String?     @db.VarChar(10)
@@ -230,17 +230,17 @@ model Magia {
 model Efeito {
   id              Int         @id @default(autoincrement())
   nome            String      @db.VarChar(30)
-  tipoEfeito      TipoEfeito  @default(Benéfico)
+  tipoEfeito      TipoEfeito  @default(Benefico)
   descricao       String      @db.Text
   magia           Magia       @relation(fields: [magiaId], references: [id])
   magiaId         Int         @unique
 }
 
 enum TipoEfeito {
-  Benéfico
-  Benéfico_maior  @map("Benéfico Maior")
-  Maléfico
-  Maléfico_maior  @map("Maléfico Maior")
+  Benefico        @map("Benéfico")
+  Benefico_maior  @map("Benéfico Maior")
+  Malefico        @map("Maléfico")
+  Malefico_maior  @map("Maléfico Maior")
   Defensivo
 }
 
@@ -249,13 +249,13 @@ enum Tipo {
   Ataque
   Controle
   Defesa
-  Invocação
+  Invocacao @map("Invocação")
 }
 
 enum Subtipo {
   Cura
-  Potencialização
-  Purificação
+  Potencializacao   @map("Potencialização")
+  Purificacao       @map("Purificação")
   Movimento
   Dano
   Dano_progressivo  @map("Dano Progressivo")
@@ -265,18 +265,18 @@ enum Subtipo {
   Escudo
   Resguardo
   Necromancia
-  Animação
-  Evocação
+  Animacao          @map("Animação")
+  Evocacao          @map("Evocação")
 }
 
 enum Purifica {
-  Único
+  Unico   @map("Único")
   Todos
 }
 
 enum Alvo {
-  Único
-  Área
+  Unico @map("Único")
+  Area  @map("Área")
 }
 
 enum TipoAlvo {
