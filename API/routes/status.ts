@@ -7,18 +7,18 @@ const prisma = new PrismaClient()
 const router = Router()
 
 const statusSchema = z.object({
-     vida: z.number().int().nonnegative(
-    { message: "A vida deve possuir apenas numeros inteiros positivos ou zero" }),
-    sanidade: z.number().int(
-    { message: "A sanidade deve possuir apenas numeros inteiros positivos ou negativos" }),
-    mana: z.number().int().nonnegative(
-    { message: "A mana deve possuir apenas numeros inteiros positivos ou zero" }),
-    afinco: z.number().int().nonnegative(
-    { message: "O afinco deve possuir apenas numeros inteiros positivos ou zero" }),
+     vida: z.number().int().lte(100).nonnegative(
+    { message: "A vida deve possuir apenas números inteiros positivos ou zero, é valor máximo de 100" }),
+    sanidade: z.number().lte(100).int(
+    { message: "A sanidade deve possuir apenas números inteiros positivos ou negativos, é valor máximo de 100" }),
+    mana: z.number().int().lte(100).nonnegative(
+    { message: "A mana deve possuir apenas números inteiros positivos ou zero, é valor máximo de 100" }),
+    afinco: z.number().int().lte(12).nonnegative(
+    { message: "O afinco deve possuir apenas números inteiros positivos ou zero, é valor máximo de 12" }),
     armadura: z.number().int().nonnegative(
-    { message: "A armadura deve possuir apenas numeros inteiros positivos ou zero" }),
+    { message: "A armadura deve possuir apenas números inteiros positivos ou zero" }),
     estoicismo: z.number().int().nonnegative(
-    { message: "O estoicismo deve possuir apenas numeros inteiros positivos ou zero" }),
+    { message: "O estoicismo deve possuir apenas números inteiros positivos ou zero" }),
     personagemId: z.number().int().nonnegative(
         { message: "PersonagemId obrigatório e deve ser inteiro positivo"}),
 })
