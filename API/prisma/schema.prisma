@@ -51,6 +51,7 @@ model Condicao {
   descricao       String      @db.Text
   status          Status      @relation(fields: [statusId], references: [id])
   statusId        Int
+  @@map("condicoes")
 }
 
 model Atributo {
