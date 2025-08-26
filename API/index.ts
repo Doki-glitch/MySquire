@@ -6,6 +6,9 @@ import routesStatus from './routes/status'
 import routesCondicoes from './routes/condicoes'
 import routesAtributos from './routes/atributos'
 import routesPericias from './routes/pericias'
+import routesHabilidades from './routes/habilidades'
+import routesEspeciais from './routes/especiais'
+import routesProfissoes from './routes/profissoes'
 
 const app = express()
 const port = 3000
@@ -18,6 +21,9 @@ app.use("/status", routesStatus)
 app.use("/condicoes", routesCondicoes)
 app.use("/atributos", routesAtributos)
 app.use("/pericias", routesPericias)
+app.use("/habilidades", routesHabilidades)
+app.use("/especiais", routesEspeciais)
+app.use("/profissoes", routesProfissoes)
 
 app.get('/', (req, res) => {
   res.send('API: MySquire')
