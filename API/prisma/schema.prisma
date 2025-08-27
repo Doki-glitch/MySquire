@@ -186,6 +186,7 @@ model Caracteristica {
   descricao       String      @db.Text
   armamento       Armamento   @relation(fields: [armamentoId], references: [id])
   armamentoId     Int
+  @@map("caracteristicas")
 }
 
 model Requerimento {
@@ -194,6 +195,7 @@ model Requerimento {
   valor           Int         @db.SmallInt
   armamento       Armamento   @relation(fields: [armamentoId], references: [id])
   armamentoId     Int
+  @@map("requerimentos")
 }
 
 model Penalidade {
