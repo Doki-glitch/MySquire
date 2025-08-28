@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import {  PrismaClient } from '@prisma/client'
 import { Router } from 'express'
 import { z } from 'zod'
 
@@ -6,23 +6,22 @@ const prisma = new PrismaClient()
 
 const router = Router()
 
-const especialSchema = z.object({
+const penalidadeSchema = z.object({
     nome: z.string(
         { message: "O nome deve possuir só caractere string e no mínimo 3 de caractere" }).min(3),
-    descricao: z.string(
-        { message: "A descrição deve possuir só caractere string e no máximo 500 de caractere" }).max(500),
-    personagemId: z.number().int().nonnegative(
-                        { message: "PersonagemId obrigatório e deve ser número inteiro positivo"}),
+    valor: z.number().lte(20),
+    armamentoId: z.number().int().nonnegative(
+                        { message: "ProfissaoId obrigatório e deve ser número inteiro positivo"}),
 })
 
 router.get("/", async (req, res) => {
     try {
-        const especiais = await prisma.especiais.findMany({
+        const penalidades = await prisma.penalidade.findMany({
         include: {
-        personagem: true,
+        armamento: true,
        }
         })
-        res.status(200).json(especiais)
+        res.status(200).json(penalidades)
     } catch (error) {
         res.status(500).json({ erro: error })
     }
@@ -30,19 +29,19 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
 
-    const valida = especialSchema.safeParse(req.body)
+    const valida = penalidadeSchema.safeParse(req.body)
     if (!valida.success) {
         res.status(400).json({ erro: valida.error })
         return
     }
 
-    const { nome, descricao, personagemId } = valida.data
+    const { nome, valor, armamentoId } = valida.data
 
     try {
-      const especial = await prisma.especiais.create({
-        data: { nome, descricao, personagemId }
+      const penalidade = await prisma.penalidade.create({
+        data: { nome, valor, armamentoId }
       })
-      res.status(201).json(especial)
+      res.status(201).json(penalidade)
     } catch (error) {
         res.status(400).json({ error })
     }
@@ -52,10 +51,10 @@ router.delete("/:id", async (req, res) => {
   const { id } = req.params
 
   try {
-    const especial = await prisma.especiais.delete({
+    const penalidade = await prisma.penalidade.delete({
       where: { id: Number(id) }
     })
-    res.status(200).json(especial)
+    res.status(200).json(penalidade)
   } catch (error) {
     res.status(400).json({ erro: error })
   }
@@ -64,20 +63,20 @@ router.delete("/:id", async (req, res) => {
 router.put("/:id", async (req, res) => {
     const { id } = req.params
 
-    const valida = especialSchema.safeParse(req.body)
+    const valida = penalidadeSchema.safeParse(req.body)
     if (!valida.success) {
         res.status(400).json({ erro: valida.error })
         return
     }
 
-    const { nome, descricao, personagemId} = valida.data
+    const { nome, valor, armamentoId} = valida.data
 
     try {
-        const especial = await prisma.especiais.update({
+        const penalidade = await prisma.penalidade.update({
             where: { id: Number(id)},
-            data: { nome, descricao, personagemId }
+            data: { nome, valor, armamentoId }
         })
-        res.status(200).json(especial)
+        res.status(200).json(penalidade)
     } catch (error) {
         res.status(400).json({ error })
     }

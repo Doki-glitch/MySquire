@@ -10,9 +10,9 @@ const armamentoSchema = z.object({
      nome: z.string(
         { message: "O nome deve possuir só caractere string e no mínimo 3 de caractere" }).min(3),
     danoMin: z.number().int(
-        { message: "O dano minimo deve possuir apenas numeros inteiros positivos e valor maior do que  zero" }).gte(1),
+        { message: "O dano mínimo deve possuir apenas numeros inteiros positivos e valor maior do que  zero" }).gte(1),
     danoMax: z.number().int(
-            { message: "o dano máximo deve possuir apenas numeros inteiros positivos " }).nonnegative(),
+            { message: "o dano máximo deve possuir apenas numeros inteiros positivos e valor pode chegar até 100" }).nonnegative().lte(100),
     habilidade: z.string(
                 { message: "A habilidade deve possuir só caractere string e no mínimo 2 de caractere" }).min(2),
     alcance: z.nativeEnum(Alcance),
