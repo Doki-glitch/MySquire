@@ -204,6 +204,7 @@ model Penalidade {
   valor           Int         @db.SmallInt
   armamento       Armamento   @relation(fields: [armamentoId], references: [id])
   armamentoId     Int
+  @@map("penalidades")
 }
 
 model Magia {
@@ -212,22 +213,29 @@ model Magia {
   custo           Int         @db.SmallInt
   tipo            Tipo        @default(Apoio)
   subtipo         Subtipo     @default(Cura)
-  cura            String?     @db.VarChar(10)
+  curaMin         Int?        @db.SmallInt
+  curaMax         Int?        @db.SmallInt
   duracao         Int?        @db.SmallInt
   efeito          Efeito[]
   purifica        Purifica?   @default(Unico)
-  dano            String?     @db.VarChar(10)
-  escudo          String?     @db.VarChar(10)
+  danoMin         Int?        @db.SmallInt
+  danoMax         Int?        @db.SmallInt
+  escudoMin       Int?        @db.SmallInt
+  escudoMax       Int?        @db.SmallInt
   alvos           Alvo?       @default(Unico)
   tipoAlvo        TipoAlvo?   @default(Aliado)
-  invoHP          String?     @db.VarChar(10)  
-  invoATK         String?     @db.VarChar(10)
+  invoHPMin       Int?        @db.SmallInt  
+  invoHPMax       Int?        @db.SmallInt
+  invoATKMin      Int?        @db.SmallInt
+  invoATKMax      Int?        @db.SmallInt
   invoLS          Boolean     @default(false)
   invoCRIT        Boolean     @default(false)
   invoDEF         Int         @db.SmallInt
   invoSELF        Boolean     @default(false)
-  invoSPWN        String?     @db.VarChar(10)
+  invoSPWNMin     Int?        @db.SmallInt
+  invoSPWNMax     Int?        @db.SmallInt
   invoSPEC        Boolean     @default(false)
+  @@map("magias")
 }
 
 model Efeito {
@@ -237,6 +245,7 @@ model Efeito {
   descricao       String      @db.Text
   magia           Magia       @relation(fields: [magiaId], references: [id])
   magiaId         Int         @unique
+  @@map("efeitos")
 }
 
 enum TipoEfeito {

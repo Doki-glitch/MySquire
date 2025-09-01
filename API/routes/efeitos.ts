@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import {  PrismaClient, TipoEfeito } from '@prisma/client'
 import { Router } from 'express'
 import { z } from 'zod'
 
@@ -6,23 +6,24 @@ const prisma = new PrismaClient()
 
 const router = Router()
 
-const especialSchema = z.object({
+const efeitoSchema = z.object({
     nome: z.string(
         { message: "O nome deve possuir só caractere string e no mínimo 3 de caractere" }).min(3),
+    tipoEfeito: z.nativeEnum(TipoEfeito),
     descricao: z.string(
-        { message: "A descrição deve possuir só caractere string e no máximo 500 de caractere" }).max(500),
-    personagemId: z.number().int().nonnegative(
-                        { message: "PersonagemId obrigatório e deve ser número inteiro positivo"}),
+        { message: "A descrição deve possuir só caractere string e no mínimo 2 de caractere" }).min(2),
+    magiaId: z.number().int().nonnegative(
+                        { message: "MagiaId obrigatório e deve ser número inteiro positivo"}),
 })
 
 router.get("/", async (req, res) => {
     try {
-        const especiais = await prisma.especiais.findMany({
+        const efeitos = await prisma.efeito.findMany({
         include: {
-        personagem: true,
+        magia: true,
        }
         })
-        res.status(200).json(especiais)
+        res.status(200).json(efeitos)
     } catch (error) {
         res.status(500).json({ erro: error })
     }
@@ -30,19 +31,19 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
 
-    const valida = especialSchema.safeParse(req.body)
+    const valida = efeitoSchema.safeParse(req.body)
     if (!valida.success) {
         res.status(400).json({ erro: valida.error })
         return
     }
 
-    const { nome, descricao, personagemId } = valida.data
+    const { nome, tipoEfeito, descricao, magiaId } = valida.data
 
     try {
-      const especial = await prisma.especiais.create({
-        data: { nome, descricao, personagemId }
+      const efeito = await prisma.efeito.create({
+        data: { nome, tipoEfeito, descricao, magiaId}
       })
-      res.status(201).json(especial)
+      res.status(201).json(efeito)
     } catch (error) {
         res.status(400).json({ error })
     }
@@ -52,10 +53,10 @@ router.delete("/:id", async (req, res) => {
   const { id } = req.params
 
   try {
-    const especial = await prisma.especiais.delete({
+    const efeito = await prisma.efeito.delete({
       where: { id: Number(id) }
     })
-    res.status(200).json(especial)
+    res.status(200).json(efeito)
   } catch (error) {
     res.status(400).json({ erro: error })
   }
@@ -64,20 +65,20 @@ router.delete("/:id", async (req, res) => {
 router.put("/:id", async (req, res) => {
     const { id } = req.params
 
-    const valida = especialSchema.safeParse(req.body)
+    const valida = efeitoSchema.safeParse(req.body)
     if (!valida.success) {
         res.status(400).json({ erro: valida.error })
         return
     }
 
-    const { nome, descricao, personagemId} = valida.data
+    const { nome, tipoEfeito, descricao, magiaId} = valida.data
 
     try {
-        const especial = await prisma.especiais.update({
+        const efeito = await prisma.efeito.update({
             where: { id: Number(id)},
-            data: { nome, descricao, personagemId }
+            data: { nome, tipoEfeito, descricao, magiaId }
         })
-        res.status(200).json(especial)
+        res.status(200).json(efeito)
     } catch (error) {
         res.status(400).json({ error })
     }
