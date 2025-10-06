@@ -17,17 +17,29 @@ model Personagem {
   id              Int         @id @default(autoincrement())
   nome            String      @db.VarChar(50)
   idade           Int         @db.SmallInt
-  descricao       String?     @db.Text
+  raca            String?     @db.VarChar(25)
+  background      String?     @db.Text
   caracteristicas String?     @db.Text
-  nivel           Int         @db.SmallInt
+  afinidade       Afinidade   @default(Parcialidade)
+  ranque          Int         @db.SmallInt
   experiencia     Int         @db.SmallInt
+  altura          Decimal     @db.Decimal(3,2)
+  foto            String      
   status          Status[]
   atributos       Atributo[]
-  pericias       Pericia[]
+  pericias        Pericia[]
   profissoes      Profissao[]
   especiais       Especiais[]
   armamentos      Armamento[]
+  armaduras       Armadura[]
+  itens           Item[]
   @@map("personagens")
+}
+
+enum Afinidade {
+  Restricao       @map("Restrição")
+  Parcialidade
+  Totalidade
 }
 
 model Status {
@@ -135,6 +147,7 @@ model Habilidade {
   id              Int         @id @default(autoincrement())
   nome            String      @db.VarChar(50)
   valor           Int         @db.SmallInt
+  descricao       String      @db.Text
   profissao       Profissao   @relation(fields: [profissaoId], references: [id])
   profissaoId     Int
   @@map("habilidades")
@@ -151,6 +164,7 @@ model Especiais {
 
 model Armamento {
   id              Int         @id @default(autoincrement())
+  tipo            String      @default("Armamento")
   nome            String      @db.VarChar(30)
   danoMin         Int         @db.SmallInt
   danoMax         Int         @db.SmallInt
@@ -159,7 +173,10 @@ model Armamento {
   carregador      Int?        @db.SmallInt
   recarga         Recarga?    @default(Instantaneo)
   cadencia        Int?        @db.SmallInt
-  caracteristica  Caracteristica[]
+  equipado        Boolean     @db.Boolean
+  tamanho         Tamanho     @default(Medio)
+  descricao       String?     @db.Text
+  caracteristica  CaracteristicaArma[]
   requerimento    Requerimento[]
   penalidade      Penalidade[]
   personagem      Personagem  @relation(fields: [personagemId], references: [id])
@@ -170,17 +187,18 @@ model Armamento {
 enum Alcance {
   Pessoal
   Curto
-  Medio  @map("Médio")
+  Medio           @map("Médio")
   Longo
   Superior
 }
 
 enum Recarga {
-  Instantaneo @map("Instantâneo")
-  Acao_extra  @map("Ação Extra")
+  Instantaneo     @map("Instantâneo")
+  Acao_extra      @map("Ação Extra")
+  Turno_inteiro   @map("Turno Inteiro")
 }
 
-model Caracteristica {
+model CaracteristicaArma {
   id              Int         @id @default(autoincrement())
   nome            String      @db.VarChar(30)
   descricao       String      @db.Text
@@ -207,7 +225,60 @@ model Penalidade {
   @@map("penalidades")
 }
 
-model Magia {
+model Armadura {
+  id              Int         @id @default(autoincrement())
+  tipo            String      @default("Armadura")
+  peca            Peca        @default(Peito)
+  protecao        Int         @db.SmallInt
+  equipado        Boolean     @db.Boolean
+  tamanho         Tamanho     @default(Medio)
+  descricao       String?     @db.Text
+  caracteristicas CaracteristicaArmadura[]
+  personagem      Personagem  @relation(fields: [personagemId], references: [id])
+  personagemId    Int
+}
+
+enum Peca {
+  Cabeca          @map("Cabeça")
+  Ombro
+  Peito
+  Capa
+  Luva
+  Cinto
+  Colar
+  Anel
+  Perna 
+  Bota
+}
+
+model CaracteristicaArmadura {
+  id              Int         @id @default(autoincrement())
+  nome            String      @db.VarChar(30)
+  descricao       String      @db.Text
+  armadura        Armadura    @relation(fields: [armaduraId], references: [id])
+  armaduraId      Int
+}
+
+model Item {
+  id              Int         @id @default(autoincrement())
+  tipo            String      @default("Item")
+  nome            String      @db.VarChar(30)
+  descricao       String      @db.Text
+  quantidade      Int         @db.SmallInt
+  tamanho         Tamanho     @default(Medio)
+  personagem      Personagem  @relation(fields: [personagemId], references: [id])
+  personagemId    Int
+}
+
+enum Tamanho {
+  Muito_pequeno   @map("Muito Pequeno")
+  Pequeno
+  Medio           @map("Médio")
+  Grande
+  Muito_grande    @map("Muito Grande")
+}
+
+/*model Magia {
   id              Int         @id @default(autoincrement())
   nome            String      @db.VarChar(50)
   custo           Int         @db.SmallInt
@@ -231,11 +302,285 @@ model Magia {
   invoLS          Boolean     @default(false)
   invoCRIT        Boolean     @default(false)
   invoDEF         Int         @db.SmallInt
-  invoSELF        Boolean     @default(false)
+  invoSELFBUFF    Boolean     @default(false)
   invoSPWNMin     Int?        @db.SmallInt
   invoSPWNMax     Int?        @db.SmallInt
-  invoSPEC        Boolean     @default(false)
+  invoSPECBUFF    Boolean     @default(false)
+  descricao       String      @db.Text
   @@map("magias")
+}*/
+
+model Magia {
+  id              Int         @id @default(autoincrement())
+  nome            String      @db.VarChar(30)
+  tipo            Tipo        @default(Ataque)
+  cura            MagiaCura[]
+  buff            MagiaBuff[]
+  cleanse         MagiaCleanse[]
+  movimento       MagiaMove[]
+  dano            MagiaDano[]
+  dot             MagiaDoT[]
+  debuff          MagiaDebuff[]
+  curse           MagiaCurse[]
+  remove          MagiaRemove[]
+  escudo          MagiaEscudo[]
+  resguardo       MagiaDef[]
+}
+
+model MagiaCura {
+  id              Int         @id @default(autoincrement())
+  subtipo         Subtipo     @default(Cura)
+  grau            Grau        @default(Grau2)
+  custo           Custo       @default(Custo2)
+  curaMin         CuraMin     @default(CuraMin2)
+  curaMax         CuraMax     @default(CuraMax2)
+  alvos           Alvo        @default(Unico)
+  tipoAlvo        TipoAlvo    @default(Aliado)
+  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magiaId         Int
+}
+
+model MagiaBuff {
+  id              Int         @id @default(autoincrement())
+  subtipo         Subtipo     @default(Potencializacao)
+  grau            Grau        @default(Grau2)
+  custo           Custo       @default(Custo2)
+  duracao         Duracao     @default(Dura10)
+  efeito          Efeito[]
+  alvos           Alvo        @default(Unico)
+  tipoAlvo        TipoAlvo    @default(Aliado)
+  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magiaId         Int
+  magiaGolem      MagiaGolem  @relation(fields: [magiaGolemId], references: [id])
+  magiaGolemId    Int
+  magiaIdolo      MagiaIdolo  @relation(fields: [magiaIdoloId], references: [id])
+  magiaIdoloId      Int
+}
+
+model MagiaCleanse {
+  id              Int         @id @default(autoincrement())
+  subtipo         Subtipo     @default(Purificacao)
+  grau            Grau        @default(Grau2)
+  custo           Custo       @default(Custo2)
+  purifica        Purifica    @default(Unico)
+  alvos           Alvo        @default(Unico)
+  tipoAlvo        TipoAlvo    @default(Aliado)
+  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magiaId         Int
+}
+
+model MagiaMove {
+  id              Int         @id @default(autoincrement())
+  subtipo         Subtipo     @default(Movimento)
+  grau            Grau        @default(Grau2)
+  custo           Custo       @default(Custo2)
+  distancia       Alcance     @default(Medio)
+  alvos           Alvo        @default(Unico)
+  tipoAlvo        TipoAlvo    @default(Aliado)
+  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magiaId         Int
+}
+
+model MagiaDano {
+  id              Int         @id @default(autoincrement())
+  subtipo         Subtipo     @default(Dano)
+  grau            Grau        @default(Grau1)
+  custo           Custo       @default(Custo1)
+  danoMin         DanoMin     @default(DanoMin1)
+  DaniMax         DanoMax     @default(DanoMax1)
+  alvos           Alvo        @default(Unico)
+  tipoAlvo        TipoAlvo    @default(Inimigo)
+  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magiaId         Int
+}
+
+model MagiaDoT {
+  id              Int         @id @default(autoincrement())
+  subtipo         Subtipo     @default(Dano_progressivo)
+  grau            Grau        @default(Grau1)
+  custo           Custo       @default(Custo1)
+  danoMin         DanoMin     @default(DanoMin1)
+  danoMax         DanoMax     @default(DanoMax1)
+  duracao         Duracao     @default(Dura10)
+  alvos           Alvo        @default(Unico)
+  tipoAlvo        TipoAlvo    @default(Inimigo)
+  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magiaId         Int
+  magiaIdolo      MagiaIdolo  @relation(fields: [magiaIdoloId], references: [id])
+  magiaIdoloId    Int
+}
+
+model MagiaDebuff {
+  id              Int         @id @default(autoincrement())
+  subtipo         Subtipo     @default(Debilitante)
+  grau            Grau        @default(Grau2)
+  custo           Custo       @default(Custo2)
+  efeito          Efeito[]
+  alvo            Alvo        @default(Unico)
+  tipoAlvo        TipoAlvo    @default(Inimigo)
+  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magiaId         Int 
+  magiaNecro      MagiaNecro  @relation(fields: [magiaNecroId], references: [id])
+  magiaNecroId    Int
+}
+
+model MagiaCurse {
+  id              Int         @id @default(autoincrement())
+  subtipo         Subtipo     @default(Opressora)
+  grau            Grau        @default(Grau3)
+  custo           Custo       @default(Custo3)
+  efeito          Efeito[]
+  alvo            Alvo        @default(Unico)
+  tipoAlvo        TipoAlvo    @default(Inimigo)
+  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magiaId         Int
+}
+
+model MagiaRemove {
+  id              Int         @id @default(autoincrement())
+  subtipo         Subtipo     @default(Disruptiva)
+  grau            Grau        @default(Grau2)
+  custo           Custo       @default(Custo2)
+  distancia       Alcance     @default(Medio)
+  alvo            Alvo        @default(Unico)
+  tipoAlvo        TipoAlvo    @default(Inimigo)
+  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magiaId         Int
+}
+
+model MagiaEscudo {
+  id              Int         @id @default(autoincrement())
+  subtipo         Subtipo     @default(Escudo)
+  grau            Grau        @default(Grau2)
+  custo           Custo       @default(Custo2)
+  escudoMin       EscudoMin   @default(EscudoMin2)
+  escudoMax       EscudoMax   @default(EscudoMax2)
+  alvo            Alvo        @default(Unico)
+  tipoAlvo        TipoAlvo    @default(Aliado)
+  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magiaId         Int
+}
+
+model MagiaDef {
+  id              Int         @id @default(autoincrement())
+  subtipo         Subtipo     @default(Resguardo)
+  grau            Grau        @default(Grau2)
+  custo           Custo       @default(Custo2)
+  efeito          Efeito[]
+  alvo            Alvo        @default(Unico)
+  tipoAlvo        TipoAlvo    @default(Aliado)
+  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magiaId         Int
+  magiaGolem      MagiaGolem  @relation(fields: [magiaGolemId], references: [id])
+  magiaGolemId    Int
+}
+
+model MagiaNecro {
+  id              Int         @id @default(autoincrement())
+  subtipo         Subtipo     @default(Necromancia)
+  grau            Grau        @default(Grau2)
+  custo           Custo       @default(Custo2)
+  invoPV          VidaInvo    @default(Vida2)
+  invoATKMin      DanoMin     @default(DanoMin2)
+  invoARKMax      DanoMax     @default(DanoMax2)
+  magiaDebuff     MagiaDebuff[]
+}
+
+model MagiaGolem {
+  id              Int         @id @default(autoincrement())
+  subtipo         Subtipo     @default(Animacao)
+  grau            Grau        @default(Grau2)
+  custo           Custo       @default(Custo2)
+  invoPV          VidaInvo    @default(Vida2)
+  invoATKMin      DanoMin     @default(DanoMin2)
+  invoATKMax      DanoMax     @default(DanoMax2)
+  armadura        DefInvo     @default(Def2)
+  magiaBuff       MagiaBuff[]
+  magiaDef        MagiaDef[]        
+}
+
+model MagiaIdolo {
+  id              Int         @id @default(autoincrement())
+  subtipo         Subtipo     @default(Evocacao)
+  grau            Grau        @default(Grau4)
+  custo           Custo       @default(Custo4)
+  invoPV          VidaInvo    @default(Vida4)
+  invoATKMin      DanoMin     @default(DanoMin4)
+  invoATKMax      DanoMax     @default(DanoMax4)
+  invoDMGMin      DanoMin     @default(DanoMin4)
+  invoDMGMax      DanoMax     @default(DanoMax4)
+  magiaBuff       MagiaBuff[]
+  magiaDoT        MagiaDoT[]
+}
+
+enum Custo {
+  Custo1
+  Custo2
+  Custo3
+  Custo4
+  Custo5
+}
+
+enum Grau {
+  Grau1
+  Grau2
+  Grau3
+  Grau4
+  Grau5
+}
+
+enum CuraMin {
+  CuraMin2
+  CuraMin3
+  CuraMin4
+  CuraMin5
+}
+
+enum CuraMax {
+  CuraMax2
+  CuraMax3
+  CuraMax4
+  CuraMax5
+}
+
+enum DanoMin {
+  DanoMin1
+  DanoMin2
+  DanoMin3
+  DanoMin4
+  DanoMin5
+}
+
+enum DanoMax {
+  DanoMax1
+  DanoMax2
+  DanoMax3
+  DanoMax4
+  DanoMax5
+}
+
+enum EscudoMin {
+  EscudoMin2
+  EscudoMin3
+  EscudoMin4
+}
+
+enum EscudoMax {
+  EscudoMax2
+  EscudoMax3
+  EscudoMax4
+}
+
+enum VidaInvo {
+  Vida2
+  Vida3
+  Vida4
+  Vida5
+}
+
+enum DefInvo {
+  Def2
+  Def3
 }
 
 model Efeito {
@@ -243,19 +588,15 @@ model Efeito {
   nome            String      @db.VarChar(30)
   tipoEfeito      TipoEfeito  @default(Benefico)
   descricao       String      @db.Text
-  magia           Magia       @relation(fields: [magiaId], references: [id])
-  magiaId         Int         @unique
+  magiabuff       MagiaBuff   @relation(fields: [magiabuffId], references: [id])
+  magiabuffId     Int         @unique
+  magiaDebuff     MagiaDebuff @relation(fields: [magiaDebuffId], references: [id])
+  magiaDebuffId   Int         @unique
+  magiaCurse      MagiaCurse  @relation(fields: [magiaCurseId], references: [id])
+  magiaCurseId    Int
+  magiaResguardo  MagiaDef    @relation(fields: [magiaDefId], references: [id])
+  magiaDefId      Int
   @@map("efeitos")
-}
-
-model Usuario {
-  id            String   @db.VarChar(36) @id @default(uuid())
-  nome          String   @db.VarChar(60)
-  email         String   @db.VarChar(40)
-  senha         String   @db.VarChar(60)   
-  createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt  
-  @@map("usuarios")
 }
 
 enum TipoEfeito {
@@ -297,11 +638,36 @@ enum Purifica {
 }
 
 enum Alvo {
+  Self
   Unico @map("Único")
   Area  @map("Área")
 }
 
 enum TipoAlvo {
+  Self
   Aliado
   Inimigo
+}
+
+enum Duracao {
+  Dura3
+  Dura5
+  Dura10
+}
+
+model Anotacao {
+  id              Int         @id @default(autoincrement())
+  titulo          String      @db.VarChar(50)
+  subtitulo       String      @db.VarChar()
+  descricao       String      @db.Text
+}
+
+model Usuario {
+  id            String   @db.VarChar(36) @id @default(uuid())
+  nome          String   @db.VarChar(60)
+  email         String   @db.VarChar(40)
+  senha         String   @db.VarChar(60)   
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt  
+  @@map("usuarios")
 }
