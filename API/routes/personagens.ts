@@ -13,6 +13,7 @@ const personagemSchema = z.object({
     { message: "A idade deve possuir apenas numeros inteiros positivos" }),
   descricao: z.string().optional(),
   caracteristicas: z.string().optional(),
+  foto: z.string(),
   nivel: z.number().int().nonnegative(
     { message: "O nível deve ser zero ou possuir apenas numeros inteiros positivos" }),
   experiencia: z.number().nonnegative(
@@ -45,12 +46,12 @@ router.post("/", async (req, res) => {
         return
     }
 
-    const { nome, idade, descricao = null, caracteristicas = null, nivel, experiencia} = valida.data
+    const { nome, idade, descricao = null, caracteristicas = null, nivel, foto, experiencia} = valida.data
 
     try {
       const personagem = await prisma.personagem.create({
         data: {
-            nome, idade, descricao, caracteristicas, nivel, experiencia
+            nome, idade, descricao, caracteristicas, nivel, foto, experiencia
         }
       })
       res.status(201).json(personagem)
@@ -82,13 +83,13 @@ router.put("/:id", async (req, res) => {
         return
     }
 
-    const {nome, idade, descricao, caracteristicas, nivel, experiencia} = valida.data
+    const {nome, idade, descricao, caracteristicas, nivel, foto, experiencia} = valida.data
 
     try {
         const personagem = await prisma.personagem.update({
             where: { id: Number(id)},
             data: {
-                nome, idade, descricao, caracteristicas, nivel, experiencia
+                nome, idade, descricao, caracteristicas, nivel, foto, experiencia
             }
         })
         res.status(200).json(personagem)
