@@ -24,6 +24,7 @@ model Personagem {
   ranque          Int         @db.SmallInt
   experiencia     Int         @db.SmallInt
   altura          Decimal     @db.Decimal(3,2)
+  foto            String      
   status          Status[]
   atributos       Atributo[]
   pericias        Pericia[]
