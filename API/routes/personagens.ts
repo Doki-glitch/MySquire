@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 const prisma = new PrismaClient()
 
-const router = Router()
+const router = Router() 
 
 const personagemSchema = z.object({
   nome: z.string().min(4,
@@ -13,7 +13,7 @@ const personagemSchema = z.object({
     { message: "A idade deve possuir apenas numeros inteiros positivos" }),
   descricao: z.string().optional(),
   caracteristicas: z.string().optional(),
-  foto: z.string(),
+  foto: z.string(),                      //serve para adicionar as fotos
   nivel: z.number().int().nonnegative(
     { message: "O nível deve ser zero ou possuir apenas numeros inteiros positivos" }),
   experiencia: z.number().nonnegative(
