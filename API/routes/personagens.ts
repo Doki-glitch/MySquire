@@ -7,8 +7,8 @@ const prisma = new PrismaClient()
 const router = Router() 
 
 const personagemSchema = z.object({
-  nome: z.string().min(4,
-    { message: "Nome deve possuir, no mínimo, 4 caracteres" }),
+  nome: z.string().max(30,
+    { message: "Nome deve possuir, no máximo, 30 caracteres" }),
   idade: z.number().int().nonnegative(
     { message: "A idade deve possuir apenas numeros inteiros positivos" }),
   descricao: z.string().optional(),
