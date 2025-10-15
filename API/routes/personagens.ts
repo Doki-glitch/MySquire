@@ -1,4 +1,4 @@
-import { PrismaClient } from '@prisma/client'
+import { Afinidade, PrismaClient } from '@prisma/client'
 import { Router } from 'express'
 import { z } from 'zod'
 
@@ -7,16 +7,23 @@ const prisma = new PrismaClient()
 const router = Router()
 
 const personagemSchema = z.object({
-  nome: z.string().min(4,
-    { message: "Nome deve possuir, no mínimo, 4 caracteres" }),
-  idade: z.number().int().nonnegative(
+  nome: z.string().max(50,
+    { message: "O nome não pode possuir mais do que 50 caracteres" }),
+  idade: z.number().int().positive(
     { message: "A idade deve possuir apenas numeros inteiros positivos" }),
-  descricao: z.string().optional(),
+  raca: z.string().max(30,
+    { message: "O nome da raça do personagem não pode possuir mais do que 30 caracteres"}).optional(),
+  background: z.string().optional(),
   caracteristicas: z.string().optional(),
-  nivel: z.number().int().nonnegative(
+  afinidade: z.nativeEnum(Afinidade),
+  ranque: z.number().int().nonnegative(
     { message: "O nível deve ser zero ou possuir apenas numeros inteiros positivos" }),
   experiencia: z.number().nonnegative(
     { message: "A experiência deve ser zero ou possuir apenas numeros positivos" }),
+  altura: z.number().positive(
+    { message: "A altura deve ser maior do que zero"}),
+  foto: z.string()
+
 })
 
 router.get("/", async (req, res) => {
@@ -29,6 +36,8 @@ router.get("/", async (req, res) => {
         profissoes: true,
         especiais: true,
         armamentos: true,
+        armaduras: true,
+        itens: true
        }
         })
         res.status(200).json(personagems)
@@ -45,12 +54,12 @@ router.post("/", async (req, res) => {
         return
     }
 
-    const { nome, idade, descricao = null, caracteristicas = null, nivel, experiencia} = valida.data
+    const { nome, idade, raca, background, caracteristicas, afinidade, ranque, experiencia, altura, foto } = valida.data
 
     try {
       const personagem = await prisma.personagem.create({
         data: {
-            nome, idade, descricao, caracteristicas, nivel, experiencia
+          nome, idade, raca, background, caracteristicas, afinidade, ranque, experiencia, altura, foto
         }
       })
       res.status(201).json(personagem)
@@ -82,13 +91,13 @@ router.put("/:id", async (req, res) => {
         return
     }
 
-    const {nome, idade, descricao, caracteristicas, nivel, experiencia} = valida.data
+    const { nome, idade, raca, background, caracteristicas, afinidade, ranque, experiencia, altura, foto } = valida.data
 
     try {
         const personagem = await prisma.personagem.update({
             where: { id: Number(id)},
             data: {
-                nome, idade, descricao, caracteristicas, nivel, experiencia
+              nome, idade, raca, background, caracteristicas, afinidade, ranque, experiencia, altura, foto
             }
         })
         res.status(200).json(personagem)
