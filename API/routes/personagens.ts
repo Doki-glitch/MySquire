@@ -4,7 +4,7 @@ import { z } from 'zod'
 
 const prisma = new PrismaClient()
 
-const router = Router()
+const router = Router() 
 
 const personagemSchema = z.object({
   nome: z.string().max(50,
