@@ -24,7 +24,8 @@ model Personagem {
   ranque          Int         @db.SmallInt
   experiencia     Int         @db.SmallInt
   altura          Decimal     @db.Decimal(3,2)
-  foto            String      
+  foto            String 
+  movimento       Int         @db.SmallInt     
   status          Status[]
   atributos       Atributo[]
   pericias        Pericia[]
@@ -33,6 +34,9 @@ model Personagem {
   armamentos      Armamento[]
   armaduras       Armadura[]
   itens           Item[]
+  anotacoes       Anotacao[]
+  usuario         Usuario     @relation(fields: [usuarioId], references: [id])
+  usuarioId       String      @db.VarChar(36)
   @@map("personagens")
 }
 
@@ -51,7 +55,7 @@ model Status {
   armadura        Int         @db.SmallInt
   estoicismo      Int         @db.SmallInt
   condicoes       Condicao[]
-  personagem      Personagem  @relation(fields: [personagemId], references: [id])
+  personagem      Personagem  @relation(fields: [personagemId], references: [id], onDelete: Cascade)
   personagemId    Int         @unique
   @@map("status")
 }
@@ -78,7 +82,7 @@ model Atributo {
   razao           Int         @db.SmallInt
   sorte           Int         @db.SmallInt
   vontade         Int         @db.SmallInt
-  personagem      Personagem  @relation(fields: [personagemId], references: [id])
+  personagem      Personagem  @relation(fields: [personagemId], references: [id], onDelete: Cascade)
   personagemId    Int         @unique
   @@map("atributos")
 }
@@ -100,7 +104,7 @@ model Pericia {
   persuasao       Int         @db.SmallInt
   psicologia      Int         @db.SmallInt
   teologia        Int         @db.SmallInt
-  personagem      Personagem  @relation(fields: [personagemId], references: [id])
+  personagem      Personagem  @relation(fields: [personagemId], references: [id], onDelete: Cascade)
   personagemId    Int         @unique
   @@map("pericias")
 }
@@ -109,7 +113,7 @@ model Profissao {
   id              Int         @id @default(autoincrement())
   nome            String      @db.VarChar(30)
   bonus           Bonus       @default(Constituicao)
-  personagem      Personagem  @relation(fields: [personagemId], references: [id])
+  personagem      Personagem  @relation(fields: [personagemId], references: [id], onDelete: Cascade)
   personagemId    Int
   habilidades     Habilidade[]
   @@map("profissoes")
@@ -157,7 +161,7 @@ model Especiais {
   id              Int         @id @default(autoincrement())
   nome            String      @db.VarChar(50)
   descricao       String      @db.Text
-  personagem      Personagem  @relation(fields: [personagemId], references: [id])
+  personagem      Personagem  @relation(fields: [personagemId], references: [id], onDelete: Cascade)
   personagemId    Int
   @@map("especiais")
 }
@@ -236,6 +240,7 @@ model Armadura {
   caracteristicas CaracteristicaArmadura[]
   personagem      Personagem  @relation(fields: [personagemId], references: [id])
   personagemId    Int
+  @@map("armaduras")
 }
 
 enum Peca {
@@ -257,6 +262,7 @@ model CaracteristicaArmadura {
   descricao       String      @db.Text
   armadura        Armadura    @relation(fields: [armaduraId], references: [id])
   armaduraId      Int
+  @@map("caracteristicaArmaduras")
 }
 
 model Item {
@@ -268,6 +274,7 @@ model Item {
   tamanho         Tamanho     @default(Medio)
   personagem      Personagem  @relation(fields: [personagemId], references: [id])
   personagemId    Int
+  @@map("itens")
 }
 
 enum Tamanho {
@@ -278,37 +285,6 @@ enum Tamanho {
   Muito_grande    @map("Muito Grande")
 }
 
-/*model Magia {
-  id              Int         @id @default(autoincrement())
-  nome            String      @db.VarChar(50)
-  custo           Int         @db.SmallInt
-  tipo            Tipo        @default(Apoio)
-  subtipo         Subtipo     @default(Cura)
-  curaMin         Int?        @db.SmallInt
-  curaMax         Int?        @db.SmallInt
-  duracao         Int?        @db.SmallInt
-  efeito          Efeito[]
-  purifica        Purifica?   @default(Unico)
-  danoMin         Int?        @db.SmallInt
-  danoMax         Int?        @db.SmallInt
-  escudoMin       Int?        @db.SmallInt
-  escudoMax       Int?        @db.SmallInt
-  alvos           Alvo?       @default(Unico)
-  tipoAlvo        TipoAlvo?   @default(Aliado)
-  invoHPMin       Int?        @db.SmallInt  
-  invoHPMax       Int?        @db.SmallInt
-  invoATKMin      Int?        @db.SmallInt
-  invoATKMax      Int?        @db.SmallInt
-  invoLS          Boolean     @default(false)
-  invoCRIT        Boolean     @default(false)
-  invoDEF         Int         @db.SmallInt
-  invoSELFBUFF    Boolean     @default(false)
-  invoSPWNMin     Int?        @db.SmallInt
-  invoSPWNMax     Int?        @db.SmallInt
-  invoSPECBUFF    Boolean     @default(false)
-  descricao       String      @db.Text
-  @@map("magias")
-}*/
 
 model Magia {
   id              Int         @id @default(autoincrement())
@@ -325,6 +301,7 @@ model Magia {
   remove          MagiaRemove[]
   escudo          MagiaEscudo[]
   resguardo       MagiaDef[]
+  @@map("magias")
 }
 
 model MagiaCura {
@@ -338,6 +315,7 @@ model MagiaCura {
   tipoAlvo        TipoAlvo    @default(Aliado)
   magia           Magia       @relation(fields: [magiaId], references: [id])
   magiaId         Int
+  @@map("magiacuras")
 }
 
 model MagiaBuff {
@@ -355,6 +333,7 @@ model MagiaBuff {
   magiaGolemId    Int
   magiaIdolo      MagiaIdolo  @relation(fields: [magiaIdoloId], references: [id])
   magiaIdoloId      Int
+  @@map("magiabuffs")
 }
 
 model MagiaCleanse {
@@ -367,6 +346,7 @@ model MagiaCleanse {
   tipoAlvo        TipoAlvo    @default(Aliado)
   magia           Magia       @relation(fields: [magiaId], references: [id])
   magiaId         Int
+  @@map("magiacleanses")
 }
 
 model MagiaMove {
@@ -379,6 +359,7 @@ model MagiaMove {
   tipoAlvo        TipoAlvo    @default(Aliado)
   magia           Magia       @relation(fields: [magiaId], references: [id])
   magiaId         Int
+  @@map("magiamoves")
 }
 
 model MagiaDano {
@@ -392,6 +373,7 @@ model MagiaDano {
   tipoAlvo        TipoAlvo    @default(Inimigo)
   magia           Magia       @relation(fields: [magiaId], references: [id])
   magiaId         Int
+  @@map("magiadanos")
 }
 
 model MagiaDoT {
@@ -408,6 +390,7 @@ model MagiaDoT {
   magiaId         Int
   magiaIdolo      MagiaIdolo  @relation(fields: [magiaIdoloId], references: [id])
   magiaIdoloId    Int
+  @@map("magiadots")
 }
 
 model MagiaDebuff {
@@ -422,6 +405,7 @@ model MagiaDebuff {
   magiaId         Int 
   magiaNecro      MagiaNecro  @relation(fields: [magiaNecroId], references: [id])
   magiaNecroId    Int
+  @@map("magiadebuffs")
 }
 
 model MagiaCurse {
@@ -434,6 +418,7 @@ model MagiaCurse {
   tipoAlvo        TipoAlvo    @default(Inimigo)
   magia           Magia       @relation(fields: [magiaId], references: [id])
   magiaId         Int
+  @@map("magiacurses")
 }
 
 model MagiaRemove {
@@ -446,6 +431,7 @@ model MagiaRemove {
   tipoAlvo        TipoAlvo    @default(Inimigo)
   magia           Magia       @relation(fields: [magiaId], references: [id])
   magiaId         Int
+  @@map("magiaremoves")
 }
 
 model MagiaEscudo {
@@ -459,6 +445,7 @@ model MagiaEscudo {
   tipoAlvo        TipoAlvo    @default(Aliado)
   magia           Magia       @relation(fields: [magiaId], references: [id])
   magiaId         Int
+  @@map("magiaescudos")
 }
 
 model MagiaDef {
@@ -473,6 +460,7 @@ model MagiaDef {
   magiaId         Int
   magiaGolem      MagiaGolem  @relation(fields: [magiaGolemId], references: [id])
   magiaGolemId    Int
+  @@map("magiadefs")
 }
 
 model MagiaNecro {
@@ -484,6 +472,7 @@ model MagiaNecro {
   invoATKMin      DanoMin     @default(DanoMin2)
   invoARKMax      DanoMax     @default(DanoMax2)
   magiaDebuff     MagiaDebuff[]
+  @@map("magianecros")
 }
 
 model MagiaGolem {
@@ -497,6 +486,7 @@ model MagiaGolem {
   armadura        DefInvo     @default(Def2)
   magiaBuff       MagiaBuff[]
   magiaDef        MagiaDef[]        
+  @@map("magiagolens")
 }
 
 model MagiaIdolo {
@@ -511,6 +501,7 @@ model MagiaIdolo {
   invoDMGMax      DanoMax     @default(DanoMax4)
   magiaBuff       MagiaBuff[]
   magiaDoT        MagiaDoT[]
+  @@map("magiaidolos")
 }
 
 enum Custo {
@@ -658,8 +649,11 @@ enum Duracao {
 model Anotacao {
   id              Int         @id @default(autoincrement())
   titulo          String      @db.VarChar(50)
-  subtitulo       String      @db.VarChar()
+  subtitulo       String      @db.VarChar(50)
   descricao       String      @db.Text
+  personagem      Personagem  @relation(fields: [personagemId], references: [id], onDelete: Cascade)
+  personagemId    Int         @unique
+  @@map("anotacoes")
 }
 
 model Usuario {
@@ -668,6 +662,7 @@ model Usuario {
   email         String   @db.VarChar(40)
   senha         String   @db.VarChar(60)   
   createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt  
+  updatedAt     DateTime @updatedAt
+  personagens   Personagem[]  
   @@map("usuarios")
 }

@@ -12,15 +12,24 @@ const efeitoSchema = z.object({
     tipoEfeito: z.nativeEnum(TipoEfeito),
     descricao: z.string(
         { message: "A descrição deve possuir só caractere string e no mínimo 2 de caractere" }).min(2),
-    magiaId: z.number().int().nonnegative(
-                        { message: "MagiaId obrigatório e deve ser número inteiro positivo"}),
+    magiaDefId: z.number().int().nonnegative(
+            { message: "magiaDefId obrigatório e deve ser número inteiro positivo"}),
+    magiaCurseId: z.number().int().nonnegative(
+            { message: "magiaCurseId obrigatório e deve ser número inteiro positivo"}),
+    magiaDebuffId: z.number().int().nonnegative(
+            { message: "magiaDebuffId obrigatório e deve ser número inteiro positivo"}),
+    magiabuffId: z.number().int().nonnegative(
+            { message: "magiabuffId obrigatório e deve ser número inteiro positivo"}),
 })
 
 router.get("/", async (req, res) => {
     try {
         const efeitos = await prisma.efeito.findMany({
         include: {
-        magia: true,
+        magiaDebuff: true,
+        magiaCurse: true,
+        magiaResguardo: true,
+        magiabuff: true,
        }
         })
         res.status(200).json(efeitos)
@@ -37,11 +46,13 @@ router.post("/", async (req, res) => {
         return
     }
 
-    const { nome, tipoEfeito, descricao, magiaId } = valida.data
+    const { nome, tipoEfeito, descricao, magiaCurseId, magiaDebuffId, magiaDefId,
+            magiabuffId } = valida.data
 
     try {
       const efeito = await prisma.efeito.create({
-        data: { nome, tipoEfeito, descricao, magiaId}
+        data: { nome, tipoEfeito, descricao, magiaCurseId, magiaDebuffId, magiaDefId,
+                magiabuffId}
       })
       res.status(201).json(efeito)
     } catch (error) {
@@ -71,12 +82,14 @@ router.put("/:id", async (req, res) => {
         return
     }
 
-    const { nome, tipoEfeito, descricao, magiaId} = valida.data
+    const { nome, tipoEfeito, descricao, magiaCurseId, magiaDebuffId, magiaDefId,
+            magiabuffId} = valida.data
 
     try {
         const efeito = await prisma.efeito.update({
             where: { id: Number(id)},
-            data: { nome, tipoEfeito, descricao, magiaId }
+            data: { nome, tipoEfeito, descricao, magiaCurseId, magiaDebuffId, magiaDefId,
+                    magiabuffId }
         })
         res.status(200).json(efeito)
     } catch (error) {

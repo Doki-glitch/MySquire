@@ -21,6 +21,7 @@ const armamentoSchema = z.object({
     cadencia: z.number().int().gte(1).optional(),
     personagemId: z.number().int().nonnegative(
         { message: "PersonagemId obrigatório e deve ser número inteiro positivo"}),
+    equipado: z.boolean()
 })
 
 router.get("/", async (req, res) => {
@@ -48,13 +49,13 @@ router.post("/", async (req, res) => {
     }
 
     const { nome, danoMin, danoMax, habilidade, alcance, carregador,
-            recarga, cadencia,  personagemId } = valida.data
+            recarga, cadencia,  personagemId, equipado } = valida.data
 
     try {
       const armamento = await prisma.armamento.create({
         data: {
             nome, danoMin, danoMax, habilidade, alcance, carregador,
-            recarga, cadencia, personagemId
+            recarga, cadencia, personagemId, equipado
         }
       })
       res.status(201).json(armamento)
@@ -86,14 +87,14 @@ router.put("/:id", async (req, res) => {
     }
 
     const { nome, danoMin, danoMax, habilidade, alcance, carregador,
-        recarga, cadencia, personagemId } = valida.data
+        recarga, cadencia, personagemId, equipado } = valida.data
 
     try {
         const armamento = await prisma.armamento.update({
             where: { id: Number(id)},
             data: {
                 nome, danoMin, danoMax, habilidade, alcance, carregador,
-            recarga, cadencia, personagemId
+            recarga, cadencia, personagemId, equipado
             }
         })
         res.status(200).json(armamento)

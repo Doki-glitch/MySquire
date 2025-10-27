@@ -17,7 +17,7 @@ const caracteristicaSchema = z.object({
 
 router.get("/", async (req, res) => {
     try {
-        const caracteristicas = await prisma.caracteristica.findMany({
+        const caracteristicas = await prisma.caracteristicaArma.findMany({
         include: {
         armamento: true,
        }
@@ -39,7 +39,7 @@ router.post("/", async (req, res) => {
     const { nome, descricao, armamentoId } = valida.data
 
     try {
-      const caracteristica = await prisma.caracteristica.create({
+      const caracteristica = await prisma.caracteristicaArma.create({
         data: { nome, descricao, armamentoId }
       })
       res.status(201).json(caracteristica)
@@ -52,7 +52,7 @@ router.delete("/:id", async (req, res) => {
     const { id } = req.params
   
     try {
-      const caracteristica = await prisma.caracteristica.delete({
+      const caracteristica = await prisma.caracteristicaArma.delete({
         where: { id: Number(id) }
       })
       res.status(200).json(caracteristica)
@@ -74,7 +74,7 @@ router.put("/:id", async (req, res) => {
     const { nome, descricao,  armamentoId } = valida.data
 
     try {
-        const caracteristica = await prisma.caracteristica.update({
+        const caracteristica = await prisma.caracteristicaArma.update({
             where: { id: Number(id)},
             data: { nome, descricao, armamentoId }
         })

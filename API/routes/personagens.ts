@@ -11,17 +11,30 @@ const personagemSchema = z.object({
     { message: "Nome deve possuir, no mínimo, 4 caracteres" }),
   idade: z.number().int().nonnegative(
     { message: "A idade deve possuir apenas numeros inteiros positivos" }),
-  descricao: z.string().optional(),
+  raca: z.string().optional(),  
+  background: z.string().optional(),
+  foto: z.string(),
   caracteristicas: z.string().optional(),
-  nivel: z.number().int().nonnegative(
+  afinidade: z.nativeEnum(Afinidade),
+  ranque: z.number().int().nonnegative(
     { message: "O nível deve ser zero ou possuir apenas numeros inteiros positivos" }),
   experiencia: z.number().nonnegative(
     { message: "A experiência deve ser zero ou possuir apenas numeros positivos" }),
+  altura: z.number().positive( 
+    {message: "Valor de altura é obrigatório e não pode ser negativo"}),
+  movimento: z.number().nonnegative( 
+    {message: "Valor de movimento é obrigatório e não pode ser negativo"}),
+  usuarioId:  z.string().uuid()
 })
 
 router.get("/", async (req, res) => {
     try {
+        const { usuarioId } = req.query
+
         const personagems = await prisma.personagem.findMany({
+        where: {
+            ...(usuarioId ? { usuarioId: String(usuarioId) } : {})
+         },
         include: {
         status: true,
         atributos: true,
@@ -37,6 +50,32 @@ router.get("/", async (req, res) => {
     }
 })
 
+router.get("/:id", async (req, res) => {
+  const { id } = req.params
+
+  try {
+    const personagem = await prisma.personagem.findUnique({
+      where: { id: Number(id) },
+      include: {
+        atributos: true,
+        status: true,
+        pericias: true,
+        profissoes: true,
+        especiais: true,
+        armamentos: true,
+      },
+    })
+
+    if (!personagem) {
+      return res.status(404).json({ erro: "Personagem não encontrado" })
+    }
+
+    res.status(200).json(personagem)
+  } catch (error) {
+    res.status(500).json({ erro: error })
+  }
+})
+
 router.post("/", async (req, res) => {
 
     const valida = personagemSchema.safeParse(req.body)
@@ -45,12 +84,14 @@ router.post("/", async (req, res) => {
         return
     }
 
-    const { nome, idade, descricao = null, caracteristicas = null, nivel, experiencia} = valida.data
+    const { nome, idade, background = null, caracteristicas = null, ranque, 
+            experiencia, foto, altura, raca = null, afinidade, movimento, usuarioId } = valida.data
 
     try {
       const personagem = await prisma.personagem.create({
         data: {
-            nome, idade, descricao, caracteristicas, nivel, experiencia
+          nome, idade, background, caracteristicas, ranque, experiencia, foto, altura, raca,
+          afinidade, movimento, usuarioId
         }
       })
       res.status(201).json(personagem)
@@ -58,7 +99,6 @@ router.post("/", async (req, res) => {
         res.status(400).json({ error })
     }
 })
-
 
 router.delete("/:id", async (req, res) => {
   const { id } = req.params
@@ -82,13 +122,15 @@ router.put("/:id", async (req, res) => {
         return
     }
 
-    const {nome, idade, descricao, caracteristicas, nivel, experiencia} = valida.data
+    const { nome, idade, background = null, caracteristicas = null, ranque, 
+            experiencia, foto, altura, raca = null, afinidade, movimento, usuarioId } = valida.data
 
     try {
         const personagem = await prisma.personagem.update({
             where: { id: Number(id)},
             data: {
-                nome, idade, descricao, caracteristicas, nivel, experiencia
+              nome, idade, background, caracteristicas, ranque, experiencia, foto, altura, raca,
+              afinidade, movimento, usuarioId
             }
         })
         res.status(200).json(personagem)
