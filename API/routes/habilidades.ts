@@ -10,7 +10,8 @@ const habilidadeSchema = z.object({
     nome: z.string(
         { message: "O nome deve possuir só caractere string e no mínimo 3 de caractere" }).min(3),
     valor: z.number().lte(20),
-    descricao: z.string(),
+    descricao: z.string(
+        { message: "A descrição deve possuir só caractere string e no mínimo 1 de caractere" }).min(1),
     profissaoId: z.number().int().nonnegative(
         { message: "ProfissaoId obrigatório e deve ser número inteiro positivo"}),
 })

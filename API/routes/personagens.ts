@@ -22,13 +22,19 @@ const personagemSchema = z.object({
     { message: "A experiência deve ser zero ou possuir apenas numeros positivos" }),
   altura: z.number().positive(
     { message: "A altura deve ser maior do que zero"}),
-  foto: z.string()
-
+  foto: z.string(),
+  movimento: z.number().nonnegative( 
+    {message: "Valor de movimento é obrigatório e não pode ser negativo"}),
+  usuarioId:  z.string().uuid()
 })
 
 router.get("/", async (req, res) => {
     try {
+        const { usuarioId } = req.query
         const personagems = await prisma.personagem.findMany({
+        where: {
+         ...(usuarioId ? { usuarioId: String(usuarioId) } : {})
+         },
         include: {
         status: true,
         atributos: true,
@@ -46,6 +52,32 @@ router.get("/", async (req, res) => {
     }
 })
 
+router.get("/:id", async (req, res) => {
+  const { id } = req.params
+
+  try {
+    const personagem = await prisma.personagem.findUnique({
+      where: { id: Number(id) },
+      include: {
+        atributos: true,
+        status: true,
+        pericias: true,
+        profissoes: true,
+        especiais: true,
+        armamentos: true,
+      },
+    })
+
+    if (!personagem) {
+      return res.status(404).json({ erro: "Personagem não encontrado" })
+    }
+
+    res.status(200).json(personagem)
+  } catch (error) {
+    res.status(500).json({ erro: error })
+  }
+})
+
 router.post("/", async (req, res) => {
 
     const valida = personagemSchema.safeParse(req.body)
@@ -54,12 +86,14 @@ router.post("/", async (req, res) => {
         return
     }
 
-    const { nome, idade, raca, background, caracteristicas, afinidade, ranque, experiencia, altura, foto } = valida.data
+    const { nome, idade, background = null, caracteristicas = null, ranque, 
+            experiencia, foto, altura, raca = null, afinidade, movimento, usuarioId } = valida.data
 
     try {
       const personagem = await prisma.personagem.create({
         data: {
-          nome, idade, raca, background, caracteristicas, afinidade, ranque, experiencia, altura, foto
+           nome, idade, background, caracteristicas, ranque, experiencia, foto, altura, raca,
+           afinidade, movimento, usuarioId
         }
       })
       res.status(201).json(personagem)
@@ -91,13 +125,15 @@ router.put("/:id", async (req, res) => {
         return
     }
 
-    const { nome, idade, raca, background, caracteristicas, afinidade, ranque, experiencia, altura, foto } = valida.data
+    const {nome, idade, background = null, caracteristicas = null, ranque, 
+           experiencia, foto, altura, raca = null, afinidade, movimento, usuarioId} = valida.data
 
     try {
         const personagem = await prisma.personagem.update({
             where: { id: Number(id)},
             data: {
-              nome, idade, raca, background, caracteristicas, afinidade, ranque, experiencia, altura, foto
+            nome, idade, background, caracteristicas, ranque, experiencia, foto, altura, raca,
+            afinidade, movimento, usuarioId
             }
         })
         res.status(200).json(personagem)

@@ -24,7 +24,8 @@ model Personagem {
   ranque          Int         @db.SmallInt
   experiencia     Int         @db.SmallInt
   altura          Decimal     @db.Decimal(3,2)
-  foto            String      
+  foto            String 
+  movimento       Int         @db.SmallInt     
   status          Status[]
   atributos       Atributo[]
   pericias        Pericia[]
@@ -33,6 +34,9 @@ model Personagem {
   armamentos      Armamento[]
   armaduras       Armadura[]
   itens           Item[]
+  anotacoes       Anotacao[]
+  usuario         Usuario     @relation(fields: [usuarioId], references: [id])
+  usuarioId       String      @db.VarChar(36)
   @@map("personagens")
 }
 
@@ -51,7 +55,7 @@ model Status {
   armadura        Int         @db.SmallInt
   estoicismo      Int         @db.SmallInt
   condicoes       Condicao[]
-  personagem      Personagem  @relation(fields: [personagemId], references: [id])
+  personagem      Personagem  @relation(fields: [personagemId], references: [id], onDelete: Cascade)
   personagemId    Int         @unique
   @@map("status")
 }
@@ -78,7 +82,7 @@ model Atributo {
   razao           Int         @db.SmallInt
   sorte           Int         @db.SmallInt
   vontade         Int         @db.SmallInt
-  personagem      Personagem  @relation(fields: [personagemId], references: [id])
+  personagem      Personagem  @relation(fields: [personagemId], references: [id], onDelete: Cascade)
   personagemId    Int         @unique
   @@map("atributos")
 }
@@ -100,7 +104,7 @@ model Pericia {
   persuasao       Int         @db.SmallInt
   psicologia      Int         @db.SmallInt
   teologia        Int         @db.SmallInt
-  personagem      Personagem  @relation(fields: [personagemId], references: [id])
+  personagem      Personagem  @relation(fields: [personagemId], references: [id], onDelete: Cascade)
   personagemId    Int         @unique
   @@map("pericias")
 }
@@ -109,7 +113,7 @@ model Profissao {
   id              Int         @id @default(autoincrement())
   nome            String      @db.VarChar(30)
   bonus           Bonus       @default(Constituicao)
-  personagem      Personagem  @relation(fields: [personagemId], references: [id])
+  personagem      Personagem  @relation(fields: [personagemId], references: [id], onDelete: Cascade)
   personagemId    Int
   habilidades     Habilidade[]
   @@map("profissoes")
@@ -157,7 +161,7 @@ model Especiais {
   id              Int         @id @default(autoincrement())
   nome            String      @db.VarChar(50)
   descricao       String      @db.Text
-  personagem      Personagem  @relation(fields: [personagemId], references: [id])
+  personagem      Personagem  @relation(fields: [personagemId], references: [id], onDelete: Cascade)
   personagemId    Int
   @@map("especiais")
 }
@@ -179,7 +183,7 @@ model Armamento {
   caracteristica  CaracteristicaArma[]
   requerimento    Requerimento[]
   penalidade      Penalidade[]
-  personagem      Personagem  @relation(fields: [personagemId], references: [id])
+  personagem      Personagem  @relation(fields: [personagemId], references: [id], onDelete: Cascade)
   personagemId    Int
   @@map("armamentos")     
 }
@@ -234,7 +238,7 @@ model Armadura {
   tamanho         Tamanho     @default(Medio)
   descricao       String?     @db.Text
   caracteristicas CaracteristicaArmadura[]
-  personagem      Personagem  @relation(fields: [personagemId], references: [id])
+  personagem      Personagem  @relation(fields: [personagemId], references: [id], onDelete: Cascade)
   personagemId    Int
   @@map("armaduras")
 }
@@ -268,7 +272,7 @@ model Item {
   descricao       String      @db.Text
   quantidade      Int         @db.SmallInt
   tamanho         Tamanho     @default(Medio)
-  personagem      Personagem  @relation(fields: [personagemId], references: [id])
+  personagem      Personagem  @relation(fields: [personagemId], references: [id], onDelete: Cascade)
   personagemId    Int
   @@map("itens")
 }
@@ -653,8 +657,10 @@ enum Duracao {
 model Anotacao {
   id              Int         @id @default(autoincrement())
   titulo          String      @db.VarChar(50)
-  subtitulo       String      @db.VarChar()
+  subtitulo       String      @db.VarChar(50)
   descricao       String      @db.Text
+  personagem      Personagem  @relation(fields: [personagemId], references: [id], onDelete: Cascade)
+  personagemId    Int         @unique
   @@map("anotacoes")
 }
 
@@ -664,6 +670,7 @@ model Usuario {
   email         String   @db.VarChar(40)
   senha         String   @db.VarChar(60)   
   createdAt     DateTime @default(now())
-  updatedAt     DateTime @updatedAt  
+  updatedAt     DateTime @updatedAt
+  personagens   Personagem[]  
   @@map("usuarios")
 }
