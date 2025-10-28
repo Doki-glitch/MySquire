@@ -18,6 +18,7 @@ import routesEfeitos from './routes/efeitos'
 import routesUsuarios from './routes/usuarios'
 import routesLogin from './routes/login'
 import routesCadastro from './routes/cadastro'
+import routesAnotacao from './routes/anotacoes'
 
 const app = express()
 const port = 3000
@@ -42,6 +43,7 @@ app.use("/efeitos", routesEfeitos)
 app.use("/usuarios/cadastro", routesCadastro)
 app.use("/usuarios/login", routesLogin)
 app.use("/usuarios", routesUsuarios)
+app.use("/anotacoes", routesAnotacao)
 
 app.get('/', (req, res) => {
   res.send('API: MySquire')
