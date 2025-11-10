@@ -10,6 +10,8 @@ const magiaSchema = z.object({
     nome: z.string(
         { message: "O nome deve possuir só caractere string e no mínimo 3 de caractere" }).min(3),
     tipo: z.nativeEnum(Tipo),
+    personagemId: z.number().int().nonnegative(
+        { message: "PersonagemId obrigatório e deve ser número inteiro positivo"}),
 })
 
 router.get("/", async (req, res) => {
@@ -48,11 +50,11 @@ router.post("/", async (req, res) => {
 
     console.log(res)
 
-    const { nome, tipo} = valida.data
+    const { nome, tipo, personagemId} = valida.data
 
     try {
       const magia = await prisma.magia.create({
-        data: { nome, tipo }
+        data: { nome, tipo, personagemId }
       })
       res.status(201).json(magia)
     } catch (error) {
@@ -82,13 +84,13 @@ router.put("/:id", async (req, res) => {
         return
     }
 
-    const { nome, tipo } = valida.data
+    const { nome, tipo, personagemId } = valida.data
 
     try {
         const magia = await prisma.magia.update({
             where: { id: Number(id)},
             data: {
-                nome, tipo
+                nome, tipo, personagemId
             }
         })
         res.status(200).json(magia)

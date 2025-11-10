@@ -43,7 +43,9 @@ router.get("/", async (req, res) => {
         especiais: true,
         armamentos: true,
         armaduras: true,
-        itens: true
+        itens: true,
+        magias: true,
+        equipamentocosmeticos: true,
        }
         })
         res.status(200).json(personagems)

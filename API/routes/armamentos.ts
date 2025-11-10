@@ -23,18 +23,27 @@ const armamentoSchema = z.object({
         { message: "PersonagemId obrigatório e deve ser número inteiro positivo"}),
     equipado: z.boolean(),
     tamanho: z.nativeEnum(Tamanho),
-    descricao: z.string()
+    descricao: z.string().optional()
 })
 
 router.get("/", async (req, res) => {
     try {
+        const { personagemId } = req.query;
+
+        const personagemIdNum = Number(req.query.personagemId);
+        const filtro = !isNaN(personagemIdNum) && personagemIdNum > 0
+      ? { personagemId: personagemIdNum }
+      : {};
+
         const armamentos = await prisma.armamento.findMany({
+        where: filtro,
         include: {
         personagem: true,
         caracteristica: true,
         requerimento: true,
         penalidade: true,
-       }
+       },
+       orderBy: { id: "asc" },
         })
         res.status(200).json(armamentos)
     } catch (error) {
