@@ -14,29 +14,32 @@ datasource db {
 }
 
 model Personagem {
-  id              Int         @id @default(autoincrement())
-  nome            String      @db.VarChar(50)
-  idade           Int         @db.SmallInt
-  raca            String?     @db.VarChar(25)
-  background      String?     @db.Text
-  caracteristicas String?     @db.Text
-  afinidade       Afinidade   @default(Parcialidade)
-  ranque          Int         @db.SmallInt
-  experiencia     Int         @db.SmallInt
-  altura          Decimal     @db.Decimal(3,2)
-  foto            String 
-  movimento       Int         @db.SmallInt     
-  status          Status[]
-  atributos       Atributo[]
-  pericias        Pericia[]
-  profissoes      Profissao[]
-  especiais       Especiais[]
-  armamentos      Armamento[]
-  armaduras       Armadura[]
-  itens           Item[]
-  anotacoes       Anotacao[]
-  usuario         Usuario     @relation(fields: [usuarioId], references: [id])
-  usuarioId       String      @db.VarChar(36)
+  id                    Int         @id @default(autoincrement())
+  nome                  String      @db.VarChar(50)
+  idade                 Int         @db.SmallInt
+  raca                  String?     @db.VarChar(25)
+  background            String?     @db.Text
+  caracteristicas       String?     @db.Text
+  afinidade             Afinidade   @default(Parcialidade)
+  ranque                Int         @db.SmallInt
+  experiencia           Int         @db.SmallInt
+  altura                Decimal     @db.Decimal(3,2)
+  foto                  String 
+  movimento             Int         @db.SmallInt     
+  status                Status[]
+  atributos             Atributo[]
+  pericias              Pericia[]
+  profissoes            Profissao[]
+  especiais             Especiais[]
+  armamentos            Armamento[]
+  armaduras             Armadura[]
+  itens                 Item[]
+  anotacoes             Anotacao[]
+  magias                Magia[]
+  mapas                 Mapa[]
+  equipamentocosmeticos EquipamentoCosmetico[]
+  usuario               Usuario     @relation(fields: [usuarioId], references: [id])
+  usuarioId             String      @db.VarChar(36)
   @@map("personagens")
 }
 
@@ -44,6 +47,15 @@ enum Afinidade {
   Restricao       @map("Restrição")
   Parcialidade
   Totalidade
+}
+
+model Mapa {
+  id            Int         @id @default(autoincrement())
+  nome          String      @db.VarChar(50)
+  imagem        String?    
+  personagem    Personagem  @relation(fields: [personagemId], references: [id], onDelete: Cascade)
+  personagemId  Int   
+  @@map("mapas")      
 }
 
 model Status {
@@ -166,6 +178,26 @@ model Especiais {
   @@map("especiais")
 }
 
+model EquipamentoCosmetico {
+  id              Int        @id @default(autoincrement())
+  capacete        String? 
+  armadura        String? 
+  capa            String?
+  ombreira        String? 
+  luva            String?
+  cinto           String?
+  colar           String?
+  anel1           String?
+  calcas          String?
+  anel2           String?
+  armaMaoEsquerda String? 
+  botas           String?
+  armaMaoDireita  String? 
+  personagem      Personagem @relation(fields: [personagemId], references: [id])
+  personagemId    Int        @unique 
+  @@map("equipamentocosmeticos")
+}
+
 model Armamento {
   id              Int         @id @default(autoincrement())
   tipo            String      @default("Armamento")
@@ -206,7 +238,7 @@ model CaracteristicaArma {
   id              Int         @id @default(autoincrement())
   nome            String      @db.VarChar(30)
   descricao       String      @db.Text
-  armamento       Armamento   @relation(fields: [armamentoId], references: [id])
+  armamento       Armamento   @relation(fields: [armamentoId], references: [id], onDelete: Cascade)
   armamentoId     Int
   @@map("caracteristicas")
 }
@@ -215,7 +247,7 @@ model Requerimento {
   id              Int         @id @default(autoincrement())
   atributo        String      @db.VarChar(50)
   valor           Int         @db.SmallInt
-  armamento       Armamento   @relation(fields: [armamentoId], references: [id])
+  armamento       Armamento   @relation(fields: [armamentoId], references: [id], onDelete: Cascade)
   armamentoId     Int
   @@map("requerimentos")
 }
@@ -224,7 +256,7 @@ model Penalidade {
   id              Int         @id @default(autoincrement())
   nome            String      @db.VarChar(50)
   valor           Int         @db.SmallInt
-  armamento       Armamento   @relation(fields: [armamentoId], references: [id])
+  armamento       Armamento   @relation(fields: [armamentoId], references: [id], onDelete: Cascade)
   armamentoId     Int
   @@map("penalidades")
 }
@@ -260,7 +292,7 @@ model CaracteristicaArmadura {
   id              Int         @id @default(autoincrement())
   nome            String      @db.VarChar(30)
   descricao       String      @db.Text
-  armadura        Armadura    @relation(fields: [armaduraId], references: [id])
+  armadura        Armadura    @relation(fields: [armaduraId], references: [id], onDelete: Cascade)
   armaduraId      Int
   @@map("caracArmaduras")
 }
@@ -303,6 +335,8 @@ model Magia {
   zumbi           MagiaNecro[]
   golem           MagiaGolem[]
   bicho           MagiaIdolo[]
+  personagem      Personagem  @relation(fields: [personagemId], references: [id], onDelete: Cascade)
+  personagemId    Int
   @@map("magias")
 }
 

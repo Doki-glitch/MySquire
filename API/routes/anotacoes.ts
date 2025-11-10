@@ -23,7 +23,7 @@ router.get("/", async (req, res) => {
         personagem: true,
        }
         })
-        res.status(200).json(atributos)
+        res.status(200).json(anotacoes)
     } catch (error) {
         res.status(500).json({ erro: error })
     }
