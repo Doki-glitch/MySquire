@@ -23,6 +23,20 @@ import routesMapas from './routes/mapas'
 import routesEquipamentoCosmeticos from './routes/equipamentocosmeticos'
 import routesItens from './routes/itens'
 import routesArmaduras from './routes/armaduras'
+import routesMagiasRemove from './routes/magiasRemove'
+import routesMagiasNecro from './routes/magiasNecro'
+import routesMagiasMove from './routes/magiasmove'
+import routesMagiasIdolo from './routes/magiasIdolo'
+import routesMagiasGolem from './routes/magiasGolem'
+import routesMagiasEscudo from './routes/magiasEscudo'
+import routesMagiasDot from './routes/magiasDoT'
+import routesMagiasDef from './routes/magiasDef'
+import routesMagiasDebuff from './routes/magiasDebuff'
+import routesMagiasDano from './routes/magiasDano'
+import routesMagiasCurse from './routes/magiasCurse'
+import routesMagiasCura from './routes/magiasCura'
+import routesMagiasCleanse from './routes/magiasCleanse'
+import routesMagiasBuff from './routes/magiasBuff'
 
 const app = express()
 const port = 3000
@@ -52,6 +66,20 @@ app.use("/mapas", routesMapas)
 app.use("/equipamentocosmeticos", routesEquipamentoCosmeticos)
 app.use("/itens", routesItens)
 app.use("/armaduras", routesArmaduras)
+app.use("/magiasBuff", routesMagiasBuff)
+app.use("/magiasCleanse", routesMagiasCleanse)
+app.use("/magiasCura", routesMagiasCura)
+app.use("/magiasCurse", routesMagiasCurse)
+app.use("/magiasDano", routesMagiasDano)
+app.use("/magiasDebuff", routesMagiasDebuff)
+app.use("/magiasDef", routesMagiasDef)
+app.use("/magiasDoT", routesMagiasDot)
+app.use("/magiasEscudo", routesMagiasEscudo)
+app.use("/magiasGolem", routesMagiasGolem)
+app.use("/magiasIdolo", routesMagiasIdolo)
+app.use("/magiasmove", routesMagiasMove)
+app.use("/magiasNecro", routesMagiasNecro)
+app.use("/magiasRemove", routesMagiasRemove)
 
 app.get('/', (req, res) => {
   res.send('API: MySquire')
