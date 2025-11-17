@@ -349,7 +349,7 @@ model MagiaCura {
   curaMax         CuraMax     @default(CuraMax2)
   alvos           Alvo        @default(Unico)
   tipoAlvo        TipoAlvo    @default(Aliado)
-  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magia           Magia       @relation(fields: [magiaId], references: [id], onDelete: Cascade)
   magiaId         Int
   @@map("magiasCura")
 }
@@ -363,12 +363,12 @@ model MagiaBuff {
   efeito          Efeito[]
   alvos           Alvo        @default(Unico)
   tipoAlvo        TipoAlvo    @default(Aliado)
-  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magia           Magia       @relation(fields: [magiaId], references: [id], onDelete: Cascade)
   magiaId         Int
-  magiaGolem      MagiaGolem  @relation(fields: [magiaGolemId], references: [id])
-  magiaGolemId    Int
-  magiaIdolo      MagiaIdolo  @relation(fields: [magiaIdoloId], references: [id])
-  magiaIdoloId      Int
+  magiaGolem      MagiaGolem?  @relation(fields: [magiaGolemId], references: [id])
+  magiaGolemId    Int?
+  magiaIdolo      MagiaIdolo?  @relation(fields: [magiaIdoloId], references: [id])
+  magiaIdoloId    Int?
   @@map("magiasBuff")
 }
 
@@ -380,7 +380,7 @@ model MagiaCleanse {
   purifica        Purifica    @default(Unico)
   alvos           Alvo        @default(Unico)
   tipoAlvo        TipoAlvo    @default(Aliado)
-  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magia           Magia       @relation(fields: [magiaId], references: [id], onDelete: Cascade)
   magiaId         Int
   @@map("magiasCleanse")
 }
@@ -393,7 +393,7 @@ model MagiaMove {
   distancia       Alcance     @default(Medio)
   alvos           Alvo        @default(Unico)
   tipoAlvo        TipoAlvo    @default(Aliado)
-  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magia           Magia       @relation(fields: [magiaId], references: [id], onDelete: Cascade)
   magiaId         Int
   @@map("magiasmove")
 }
@@ -407,7 +407,7 @@ model MagiaDano {
   DaniMax         DanoMax     @default(DanoMax1)
   alvos           Alvo        @default(Unico)
   tipoAlvo        TipoAlvo    @default(Inimigo)
-  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magia           Magia       @relation(fields: [magiaId], references: [id], onDelete: Cascade)
   magiaId         Int
   @@map("magiasDano")
 }
@@ -422,10 +422,10 @@ model MagiaDoT {
   duracao         Duracao     @default(Dura10)
   alvos           Alvo        @default(Unico)
   tipoAlvo        TipoAlvo    @default(Inimigo)
-  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magia           Magia       @relation(fields: [magiaId], references: [id], onDelete: Cascade)
   magiaId         Int
-  magiaIdolo      MagiaIdolo  @relation(fields: [magiaIdoloId], references: [id])
-  magiaIdoloId    Int
+  magiaIdolo      MagiaIdolo?  @relation(fields: [magiaIdoloId], references: [id])
+  magiaIdoloId    Int?
   @@map("magiasDoT")
 }
 
@@ -437,10 +437,10 @@ model MagiaDebuff {
   efeito          Efeito[]
   alvo            Alvo        @default(Unico)
   tipoAlvo        TipoAlvo    @default(Inimigo)
-  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magia           Magia       @relation(fields: [magiaId], references: [id], onDelete: Cascade)
   magiaId         Int 
-  magiaNecro      MagiaNecro  @relation(fields: [magiaNecroId], references: [id])
-  magiaNecroId    Int
+  magiaNecro      MagiaNecro?  @relation(fields: [magiaNecroId], references: [id])
+  magiaNecroId    Int?
   @@map("magiasDebuff")
 }
 
@@ -452,7 +452,7 @@ model MagiaCurse {
   efeito          Efeito[]
   alvo            Alvo        @default(Unico)
   tipoAlvo        TipoAlvo    @default(Inimigo)
-  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magia           Magia       @relation(fields: [magiaId], references: [id], onDelete: Cascade)
   magiaId         Int
   @@map("magiasCurse")
 }
@@ -465,7 +465,7 @@ model MagiaRemove {
   distancia       Alcance     @default(Medio)
   alvo            Alvo        @default(Unico)
   tipoAlvo        TipoAlvo    @default(Inimigo)
-  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magia           Magia       @relation(fields: [magiaId], references: [id], onDelete: Cascade)
   magiaId         Int
   @@map("magiasRemove")
 }
@@ -479,7 +479,7 @@ model MagiaEscudo {
   escudoMax       EscudoMax   @default(EscudoMax2)
   alvo            Alvo        @default(Unico)
   tipoAlvo        TipoAlvo    @default(Aliado)
-  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magia           Magia       @relation(fields: [magiaId], references: [id], onDelete: Cascade)
   magiaId         Int
   @@map("magiasEscudo")
 }
@@ -492,10 +492,10 @@ model MagiaDef {
   efeito          Efeito[]
   alvo            Alvo        @default(Unico)
   tipoAlvo        TipoAlvo    @default(Aliado)
-  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magia           Magia       @relation(fields: [magiaId], references: [id], onDelete: Cascade)
   magiaId         Int
-  magiaGolem      MagiaGolem  @relation(fields: [magiaGolemId], references: [id])
-  magiaGolemId    Int
+  magiaGolem      MagiaGolem?  @relation(fields: [magiaGolemId], references: [id])
+  magiaGolemId    Int?
   @@map("magiasDef")
 }
 
@@ -507,7 +507,7 @@ model MagiaNecro {
   invoPV          VidaInvo    @default(Vida2)
   invoATKMin      DanoMin     @default(DanoMin2)
   invoARKMax      DanoMax     @default(DanoMax2)
-  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magia           Magia       @relation(fields: [magiaId], references: [id], onDelete: Cascade)
   magiaId         Int
   magiaDebuff     MagiaDebuff[]
   @@map("magiasNecro")
@@ -524,7 +524,7 @@ model MagiaGolem {
   armadura        DefInvo     @default(Def2)
   magiaBuff       MagiaBuff[]
   magiaDef        MagiaDef[]
-  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magia           Magia       @relation(fields: [magiaId], references: [id], onDelete: Cascade)
   magiaId         Int
   @@map("magiasGolem")        
 }
@@ -541,7 +541,7 @@ model MagiaIdolo {
   invoDMGMax      DanoMax     @default(DanoMax4)
   magiaBuff       MagiaBuff[]
   magiaDoT        MagiaDoT[]
-  magia           Magia       @relation(fields: [magiaId], references: [id])
+  magia           Magia       @relation(fields: [magiaId], references: [id], onDelete: Cascade)
   magiaId         Int
   @@map("magiasIdolo")
 }

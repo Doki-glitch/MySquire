@@ -39,21 +39,6 @@ router.get("/", async (req, res) => {
         },
       });
   
-      if (personagemIdParam && status.length === 0) {
-        const novo = await prisma.status.create({
-          data: {
-            personagemId: Number(personagemIdParam),
-            vida: 0,
-            mana: 0,
-            sanidade: 0,
-            afinco: 0,
-            armadura: 0,
-            estoicismo: 0,
-          },
-        });
-        return res.status(201).json([novo]);
-      }
-  
       res.status(200).json(status);
     } catch (error) {
       console.error("Erro no GET /status:", error);
