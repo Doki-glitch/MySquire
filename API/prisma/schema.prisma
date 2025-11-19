@@ -193,7 +193,7 @@ model EquipamentoCosmetico {
   armaMaoEsquerda String? 
   botas           String?
   armaMaoDireita  String? 
-  personagem      Personagem @relation(fields: [personagemId], references: [id])
+  personagem      Personagem @relation(fields: [personagemId], references: [id], onDelete: Cascade)
   personagemId    Int        @unique 
   @@map("equipamentocosmeticos")
 }
