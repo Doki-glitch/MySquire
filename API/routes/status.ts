@@ -25,17 +25,26 @@ const statusSchema = z.object({
 
 router.get("/", async (req, res) => {
     try {
-        const status = await prisma.status.findMany({
+      const personagemIdParam = req.query.personagemId;
+  
+      const where = personagemIdParam
+        ? { personagemId: Number(personagemIdParam) }
+        : {};
+  
+      const status = await prisma.status.findMany({
+        where,
         include: {
-        personagem: true,
-        condicoes: true,
-       }
-        })
-        res.status(200).json(status)
+          personagem: true,
+          condicoes: true,
+        },
+      });
+  
+      res.status(200).json(status);
     } catch (error) {
-        res.status(500).json({ erro: error })
+      console.error("Erro no GET /status:", error);
+      res.status(500).json({ erro: error });
     }
-})
+  });
 
 router.post("/", async (req, res) => {
 
@@ -74,8 +83,8 @@ router.delete("/:id", async (req, res) => {
 
 router.put("/:id", async (req, res) => {
     const { id } = req.params
-
     const valida = statusSchema.safeParse(req.body)
+    
     if (!valida.success) {
         res.status(400).json({ erro: valida.error })
         return
@@ -95,5 +104,23 @@ router.put("/:id", async (req, res) => {
         res.status(400).json({ error })
     }
 })
+
+router.patch("/:id", async (req, res) => {
+    const { id } = req.params;
+    const data = req.body;
+  
+    try {
+      // Atualiza apenas os campos enviados
+      const status = await prisma.status.update({
+        where: { id: Number(id) },
+        data,
+      });
+  
+      res.status(200).json(status);
+    } catch (error) {
+      console.error("Erro no PATCH /status:", error);
+      res.status(400).json({ erro: error });
+    }
+  });
 
 export default router

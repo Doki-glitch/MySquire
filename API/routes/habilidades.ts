@@ -10,8 +10,10 @@ const habilidadeSchema = z.object({
     nome: z.string(
         { message: "O nome deve possuir só caractere string e no mínimo 3 de caractere" }).min(3),
     valor: z.number().lte(20),
+    descricao: z.string(
+        { message: "A descrição deve possuir só caractere string e no mínimo 1 de caractere" }).min(1),
     profissaoId: z.number().int().nonnegative(
-                        { message: "ProfissaoId obrigatório e deve ser número inteiro positivo"}),
+        { message: "ProfissaoId obrigatório e deve ser número inteiro positivo"}),
 })
 
 router.get("/", async (req, res) => {
@@ -35,11 +37,11 @@ router.post("/", async (req, res) => {
         return
     }
 
-    const { nome, valor, profissaoId } = valida.data
+    const { nome, valor, descricao, profissaoId } = valida.data
 
     try {
       const habilidade = await prisma.habilidade.create({
-        data: { nome, valor, profissaoId }
+        data: { nome, valor, descricao, profissaoId }
       })
       res.status(201).json(habilidade)
     } catch (error) {
@@ -69,12 +71,12 @@ router.put("/:id", async (req, res) => {
         return
     }
 
-    const { nome, valor, profissaoId} = valida.data
+    const { nome, valor, descricao, profissaoId} = valida.data
 
     try {
         const habilidade = await prisma.habilidade.update({
             where: { id: Number(id)},
-            data: { nome, valor, profissaoId }
+            data: { nome, valor, descricao, profissaoId }
         })
         res.status(200).json(habilidade)
     } catch (error) {

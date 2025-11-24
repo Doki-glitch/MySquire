@@ -1,4 +1,4 @@
-import { Alcance, PrismaClient, Recarga } from '@prisma/client'
+import { Alcance, PrismaClient, Recarga, Tamanho } from '@prisma/client'
 import { Router } from 'express'
 import { z } from 'zod'
 
@@ -7,7 +7,7 @@ const prisma = new PrismaClient()
 const router = Router()
 
 const armamentoSchema = z.object({
-     nome: z.string(
+    nome: z.string(
         { message: "O nome deve possuir só caractere string e no mínimo 3 de caractere" }).min(3),
     danoMin: z.number().int(
         { message: "O dano mínimo deve possuir apenas numeros inteiros positivos e valor maior do que  zero" }).gte(1),
@@ -21,17 +21,29 @@ const armamentoSchema = z.object({
     cadencia: z.number().int().gte(1).optional(),
     personagemId: z.number().int().nonnegative(
         { message: "PersonagemId obrigatório e deve ser número inteiro positivo"}),
+    equipado: z.boolean(),
+    tamanho: z.nativeEnum(Tamanho),
+    descricao: z.string().optional()
 })
 
 router.get("/", async (req, res) => {
     try {
+        const { personagemId } = req.query;
+
+        const personagemIdNum = Number(req.query.personagemId);
+        const filtro = !isNaN(personagemIdNum) && personagemIdNum > 0
+      ? { personagemId: personagemIdNum }
+      : {};
+
         const armamentos = await prisma.armamento.findMany({
+        where: filtro,
         include: {
         personagem: true,
         caracteristica: true,
         requerimento: true,
         penalidade: true,
-       }
+       },
+       orderBy: { id: "asc" },
         })
         res.status(200).json(armamentos)
     } catch (error) {
@@ -48,13 +60,13 @@ router.post("/", async (req, res) => {
     }
 
     const { nome, danoMin, danoMax, habilidade, alcance, carregador,
-            recarga, cadencia,  personagemId } = valida.data
+            recarga, cadencia, personagemId, equipado, tamanho, descricao } = valida.data
 
     try {
       const armamento = await prisma.armamento.create({
         data: {
             nome, danoMin, danoMax, habilidade, alcance, carregador,
-            recarga, cadencia, personagemId
+            recarga, cadencia, personagemId, equipado, tamanho, descricao
         }
       })
       res.status(201).json(armamento)
@@ -86,14 +98,14 @@ router.put("/:id", async (req, res) => {
     }
 
     const { nome, danoMin, danoMax, habilidade, alcance, carregador,
-        recarga, cadencia, personagemId } = valida.data
+        recarga, cadencia, personagemId, equipado, tamanho, descricao } = valida.data
 
     try {
         const armamento = await prisma.armamento.update({
             where: { id: Number(id)},
             data: {
                 nome, danoMin, danoMax, habilidade, alcance, carregador,
-            recarga, cadencia, personagemId
+            recarga, cadencia, personagemId, equipado, tamanho, descricao
             }
         })
         res.status(200).json(armamento)

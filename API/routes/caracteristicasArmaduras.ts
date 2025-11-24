@@ -6,23 +6,23 @@ const prisma = new PrismaClient()
 
 const router = Router()
 
-const caracteristicaSchema = z.object({
+const caracteristicaArmaduraSchema = z.object({
      nome: z.string(
         { message: "O nome deve possuir só caractere string e no mínimo 3 de caractere" }).min(3),
     descricao: z.string(
         { message: "A descrição deve possuir só caractere string e no mínimo 2 de caractere" }).min(2),
-    armamentoId: z.number().int().nonnegative(
-        { message: "ArmamentoId obrigatório e deve ser número inteiro positivo"}),
+    armaduraId: z.number().int().nonnegative(
+        { message: "ArmaduraId obrigatório e deve ser número inteiro positivo"}),
 })
 
 router.get("/", async (req, res) => {
     try {
-        const caracteristicas = await prisma.caracteristica.findMany({
+        const caracteristicaArmaduras = await prisma.caracteristicaArmadura.findMany({
         include: {
-        armamento: true,
+        armadura: true,
        }
         })
-        res.status(200).json(caracteristicas)
+        res.status(200).json(caracteristicaArmaduras)
     } catch (error) {
         res.status(500).json({ erro: error })
     }
@@ -30,19 +30,19 @@ router.get("/", async (req, res) => {
 
 router.post("/", async (req, res) => {
 
-    const valida = caracteristicaSchema.safeParse(req.body)
+    const valida = caracteristicaArmaduraSchema.safeParse(req.body)
     if (!valida.success) {
         res.status(400).json({ erro: valida.error })
         return
     }
 
-    const { nome, descricao, armamentoId } = valida.data
+    const { nome, descricao, armaduraId } = valida.data
 
     try {
-      const caracteristica = await prisma.caracteristica.create({
-        data: { nome, descricao, armamentoId }
+      const caracteristicaArmadura = await prisma.caracteristicaArmadura.create({
+        data: { nome, descricao, armaduraId }
       })
-      res.status(201).json(caracteristica)
+      res.status(201).json(caracteristicaArmadura)
     } catch (error) {
         res.status(400).json({ error })
     }
@@ -52,10 +52,10 @@ router.delete("/:id", async (req, res) => {
     const { id } = req.params
   
     try {
-      const caracteristica = await prisma.caracteristica.delete({
+      const caracteristicaArmadura = await prisma.caracteristicaArmadura.delete({
         where: { id: Number(id) }
       })
-      res.status(200).json(caracteristica)
+      res.status(200).json(caracteristicaArmadura)
     } catch (error) {
       res.status(400).json({ erro: error })
     }
@@ -65,20 +65,20 @@ router.delete("/:id", async (req, res) => {
 router.put("/:id", async (req, res) => {
     const { id } = req.params
 
-    const valida = caracteristicaSchema.safeParse(req.body)
+    const valida = caracteristicaArmaduraSchema.safeParse(req.body)
     if (!valida.success) {
         res.status(400).json({ erro: valida.error })
         return
     }
 
-    const { nome, descricao,  armamentoId } = valida.data
+    const { nome, descricao,  armaduraId } = valida.data
 
     try {
-        const caracteristica = await prisma.caracteristica.update({
+        const caracteristicaArmadura = await prisma.caracteristicaArmadura.update({
             where: { id: Number(id)},
-            data: { nome, descricao, armamentoId }
+            data: { nome, descricao, armaduraId }
         })
-        res.status(200).json(caracteristica)
+        res.status(200).json(caracteristicaArmadura)
     } catch (error) {
         res.status(400).json({ error })
     }
